@@ -68,8 +68,6 @@ class CBS {
                 //此处有错误，需要修正
                 if (!this.isInArray(this.openSet, newNode)) {
                     this.openSet.push(newNode);
-                } else {
-                    console.log('111111');
                 }
 
 
@@ -77,6 +75,7 @@ class CBS {
             // console.log("open2:", this.openSet);
             // console.log("close2:", this.closedSet);
         }
+        return -1;   //无解
     }
 
     //检查CTNode是否在Set中

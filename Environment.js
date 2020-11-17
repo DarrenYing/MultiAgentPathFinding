@@ -187,10 +187,10 @@ class Environment {
 
     makeAgentDict() {
         for (let agent of this.agents) {
-            var startState = new State(0, new Location(agent['start'][0], agent['start'][1]));
-            var endState = new State(0, new Location(agent['goal'][0], agent['goal'][1]));
+            var startState = new State(0, new Location(agent.start[0], agent.start[1]));
+            var endState = new State(0, new Location(agent.goal[0], agent.goal[1]));
 
-            this.agent_dict[agent['name']] = {
+            this.agent_dict[agent.name] = {
                 'start': startState,
                 'goal': endState
             };
@@ -309,12 +309,12 @@ class Environment {
         strokeWeight(2);
         stroke(51);
         for (let agent of this.agents) {
-            let color = agent['color'];
-            let sx = agent['start'][0];
-            let sy = agent['start'][1];
+            let color = agent.color;
+            let sx = agent.start[0];
+            let sy = agent.start[1];
             this.grid[sx][sy].show(color);
-            let gx = agent['goal'][0];
-            let gy = agent['goal'][1];
+            let gx = agent.goal[0];
+            let gy = agent.goal[1];
             this.grid[gx][gy].show(color);
 
         }

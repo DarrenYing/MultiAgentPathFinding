@@ -9,10 +9,6 @@ var top_pos = 10;
 // 地图相关变量
 var cellw = 30;
 var cellh = 30;
-var rows;
-var cols;
-var mapw;
-var maph;
 var gameMap;
 var mapGraph; //将地图存储为图片，节约每次刷新的绘制时间
 var mapEdit; //标记是否能编辑地图
@@ -25,7 +21,6 @@ var isAlgReady = false;
 var isMapReady = false;
 
 // 接收html变量
-var curAgent;
 var inputRow;
 var inputCol;
 var wallPercent;
@@ -38,6 +33,9 @@ var radioBlock;
 var flagStart;
 var flagEnd;
 var flagBlock;
+
+var selBox;
+var curAgent;
 
 // 控制类变量
 var status;
@@ -52,6 +50,8 @@ var resetButton;
 function setup() {
 
     //用户输入
+    selBox = select('#sel');
+
     inputRow = select('#row');
     inputCol = select('#col');
     wallPercent = select('#blockPercent');
@@ -70,30 +70,36 @@ function initCanvas() {
     var cols = inputCol.value();
     var wallRatio = wallPercent.value();
 
+    // var curAgent = selBox.elt.value;
+
     var canvasWidth = cellw * cols + 100;
     canvas = createCanvas(canvasWidth, canvasWidth);
     canvas.position(screen.availWidth / 2 - canvasWidth / 2, 100);
 
     var dimension = [cols, rows]; //col, row
-    var agents = [{
-        'start': [0, 0],
-        'goal': [17, 2],
-        'name': 'agent0',
-        'color': [255, 0, 0]
-    }, {
-        'start': [2, 0],
-        'goal': [0, 12],
-        'name': 'agent1',
-        'color': [0, 255, 0]
-    }];
-    env = new Environment(dimension, agents, wallRatio);
+    if (!agentObjs.length) {
+        var agents = [{
+            'start': [0, 0],
+            'goal': [17, 2],
+            'name': 'agent1',
+            'color': [255, 0, 0]
+        }, {
+            'start': [2, 0],
+            'goal': [0, 12],
+            'name': 'agent2',
+            'color': [0, 255, 0]
+        }];
+
+        for (var agent of agents) {
+            var o = new Agent(agent['start'], agent['goal'], agent['name'], agent['color']);
+            agentObjs.push(o);
+        }
+    }
+
+    env = new Environment(dimension, agentObjs, wallRatio);
     env.showGrid();
 
-    for (var agent of agents) {
-        var o = new Agent(agent['start'], agent['goal'], agent['name'], agent['color']);
 
-        agentObjs.push(o);
-    }
 
     paused = true;
 
@@ -121,7 +127,6 @@ function initSearch() {
     mapGraph = null;
     mapEdit = true;
     status = "Parameter Tuning";
-
 }
 
 function pauseCheck(isPause) {
@@ -129,7 +134,7 @@ function pauseCheck(isPause) {
     runPauseButton.label = paused ? "运行" : "暂停";
     if (!paused) {
         calcPath();
-        isAlgReady = true;
+        // isAlgReady = true;
     }
 }
 
@@ -142,6 +147,12 @@ function restart(button) {
     //重置状态
     initSearch();
     pauseCheck(true);
+    console.log(curT);
+    for (var agent of agentObjs) {
+        agent.stepOff(curT - 1);
+        agent.stepOff(curT);
+    }
+    curT = 0;
 }
 
 function removeOrgButton(btn) {
@@ -158,16 +169,24 @@ function calcPath() {
     console.log(solution);
     console.log('done out!');
 
-    for (var agent of agentObjs) {
-        agent.path = solution[agent.name];
-        if (agent.path.length > maxT) {
-            maxT = agent.path.length;
-        }
-    }
+    if (!Object.keys(solution).length || solution == -1) {
+        status = "No Solution!"
+        console.log(status);
+        noLoop();
+        return;
+    } else {
 
-    for (var agent of agentObjs) {
-        if (agent.path.length < maxT) {
-            agent.fullFillPath(maxT);
+        for (var agent of agentObjs) {
+            agent.path = solution[agent.name];
+            if (agent.path.length > maxT) {
+                maxT = agent.path.length;
+            }
+        }
+
+        for (var agent of agentObjs) {
+            if (agent.path.length < maxT) {
+                agent.fullFillPath(maxT);
+            }
         }
     }
 }
@@ -198,8 +217,16 @@ function isBoundSatisfied(x, y) {
     return x < env.dimension[0] && y < env.dimension[1] && x >= 0 && y >= 0;
 }
 
-function checkAgent() {
-    return 1;
+// function checkAgent() {
+//     return
+// }
+
+function getAgentByName(agentName) {
+    for (var i = 0; i < agentObjs.length; i++) {
+        if (agentObjs[i].name == agentName) {
+            return agentObjs[i];
+        }
+    }
 }
 
 function mouseClicked() {
@@ -213,22 +240,32 @@ function mouseClicked() {
         checkRadio();
         if (isBoundSatisfied(x, y)) {
             if (flagStart) {
-                var curAgent = checkAgent();
+                var agentName = selBox.elt.value; //agentName
+                curAgent = getAgentByName(agentName);
                 if (env.grid[x][y].type != 1) {
                     //清除原来的start
                     env.grid[curAgent.start[0]][curAgent.start[1]].type = 0;
+                    translate(left_pos, top_pos);
+                    env.grid[curAgent.start[0]][curAgent.start[1]].show();
+                    translate(-left_pos, -top_pos);
                     //设定新的start
                     env.grid[x][y].type = 2;
                     curAgent.start = [x, y];
+                    env.makeAgentDict();
                 }
             } else if (flagEnd) {
-                var curAgent = checkAgent();
+                var agentName = selBox.elt.value; //agentName
+                curAgent = getAgentByName(agentName);
                 if (env.grid[x][y].type != 1) {
                     //清除原来的start
                     env.grid[curAgent.goal[0]][curAgent.goal[1]].type = 0;
+                    translate(left_pos, top_pos);
+                    env.grid[curAgent.goal[0]][curAgent.goal[1]].show();
+                    translate(-left_pos, -top_pos);
                     //设定新的start
                     env.grid[x][y].type = 3;
-                    curAgent.start = [x, y];
+                    curAgent.goal = [x, y];
+                    env.makeAgentDict();
                 }
             } else {
                 var tmpFlag = true;
@@ -281,7 +318,7 @@ function draw() {
         drawButtons();
     }
 
-    if (isAlgReady) {
+    if (!paused) {
 
         if (frameCount % 30 == 0) {
 
