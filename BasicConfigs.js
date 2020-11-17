@@ -138,7 +138,7 @@ class Button {
     show() {
         stroke(0);
         strokeWeight(1);
-        noFill();
+        fill(255);
         rect(this.x, this.y, this.w, this.h);
         fill(0);
         noStroke();

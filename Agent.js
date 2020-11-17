@@ -1,5 +1,5 @@
 class Agent {
-    constructor(start, goal, name, color, path) {
+    constructor(start, goal, name, color, path=null) {
         this.start = start;
         this.goal = goal;
         this.name = name;

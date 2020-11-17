@@ -21,7 +21,8 @@ var agentObjs = [];
 var maxT = 0;
 var curT = 0;
 
-var isReady = false;
+var isAlgReady = false;
+var isMapReady = false;
 
 // 接收html变量
 var curAgent;
@@ -88,31 +89,32 @@ function initCanvas() {
     env = new Environment(dimension, agents, wallRatio);
     env.showGrid();
 
-    // for (var agent of agents) {
-    //     var path = solution[agent['name']];
-    //     var o = new Agent(agent['start'], agent['goal'], agent['name'], agent['color'], path);
-    //     if (path.length > maxT) {
-    //         maxT = path.length;
-    //     }
-    //     agentObjs.push(o);
-    // }
+    for (var agent of agents) {
+        var o = new Agent(agent['start'], agent['goal'], agent['name'], agent['color']);
+
+        agentObjs.push(o);
+    }
 
     paused = true;
 
     initSearch();
 
-    // removeOrgButton(runPauseButton);
+    removeOrgButton(runPauseButton);
     runPauseButton = new Button("运行", env.w + 30, 20, 50, 30, runpause);
     components.push(runPauseButton);
 
-    // // removeOrgButton(stepButton);
+    // removeOrgButton(stepButton);
     // stepButton = new Button("单步", env.w+30, 70, 50, 30, step)
     // components.push(stepButton);
-    //
-    // // removeOrgButton(resetButton);
-    // resetButton = new Button("重置", env.w+30, 120, 50, 30, restart)
-    // components.push(resetButton);
 
+    removeOrgButton(resetButton);
+    resetButton = new Button("重置", env.w + 30, 120, 50, 30, restart)
+    components.push(resetButton);
+
+    isMapReady = true;
+
+    // calcPath();
+    // isAlgReady = true;
 }
 
 function initSearch() {
@@ -127,7 +129,7 @@ function pauseCheck(isPause) {
     runPauseButton.label = paused ? "运行" : "暂停";
     if (!paused) {
         calcPath();
-        isReady = true;
+        isAlgReady = true;
     }
 }
 
@@ -136,12 +138,32 @@ function runpause(button) {
     pauseCheck(!paused);
 }
 
+function restart(button) {
+    //重置状态
+    initSearch();
+    pauseCheck(true);
+}
+
+function removeOrgButton(btn) {
+    if (btn) {
+        let i = components.indexOf(btn);
+        components.splice(i, 1);
+    }
+}
+
 function calcPath() {
     cbs = new CBS(env);
     solution = cbs.search();
 
     console.log(solution);
     console.log('done out!');
+
+    for (var agent of agentObjs) {
+        agent.path = solution[agent.name];
+        if (agent.path.length > maxT) {
+            maxT = agent.path.length;
+        }
+    }
 
     for (var agent of agentObjs) {
         if (agent.path.length < maxT) {
@@ -166,21 +188,24 @@ function checkRadio() {
     }
 }
 
-function mouseClicked() {
-    for (var i = 0; i < components.length; i++) {
-        components[i].mouseClick(mouseX, mouseY);
-    }
-}
+// function mouseClicked() {
+//     for (var i = 0; i < components.length; i++) {
+//         components[i].mouseClick(mouseX, mouseY);
+//     }
+// }
 
 function isBoundSatisfied(x, y) {
-    return x < cols && y < rows && x >= 0 && y >= 0;
+    return x < env.dimension[0] && y < env.dimension[1] && x >= 0 && y >= 0;
 }
 
 function checkAgent() {
     return 1;
 }
 
-function mousePressed() {
+function mouseClicked() {
+    for (var i = 0; i < components.length; i++) {
+        components[i].mouseClick(mouseX, mouseY);
+    }
     if (mapEdit) {
         let x = int((mouseX - left_pos) / cellw);
         let y = int((mouseY - top_pos) / cellh);
@@ -200,7 +225,7 @@ function mousePressed() {
                 var curAgent = checkAgent();
                 if (env.grid[x][y].type != 1) {
                     //清除原来的start
-                    env.grid[curAgent.end[0]][curAgent.end[1]].type = 0;
+                    env.grid[curAgent.goal[0]][curAgent.goal[1]].type = 0;
                     //设定新的start
                     env.grid[x][y].type = 3;
                     curAgent.start = [x, y];
@@ -208,18 +233,22 @@ function mousePressed() {
             } else {
                 var tmpFlag = true;
                 for (var agent of agentObjs) {
-                    if ((x == agent.start[0] && y == agent1.start[1]) ||
-                        (x == agent1.end[0] && y == agent1.end[1])) {
+                    if ((x == agent.start[0] && y == agent.start[1]) ||
+                        (x == agent.goal[0] && y == agent.goal[1])) {
                         tmpFlag = false;
                     }
                 }
                 if (tmpFlag) {
+                    console.log(env.grid[x][y].type);
                     if (env.grid[x][y].type == 1) {
                         env.removeObstacle(x, y);
                     } else {
+                        console.log(env.obstacles.length);
                         env.obstacles.push([x, y]);
+                        console.log(env.obstacles.length);
                     }
                     env.grid[x][y].toggleWall();
+                    console.log(env.grid[x][y].type);
                 }
 
             }
@@ -228,26 +257,33 @@ function mousePressed() {
 }
 
 function drawMap() {
-    if (mapEdit) {
-        for (var i = 0; i < cols; i++) {
-            for (var j = 0; j < rows; j++) {
-                env.grid[i][j].show();
-            }
-        }
-        mapGraph = get(left_pos, top_pos, env.w + 1, env.h + 1);
-    } else {
-        image(mapGraph, left_pos, top_pos);
+    // if (mapEdit) {   // 不知道是啥问题，会变绿
+    env.showBlock();
+    env.showImg();
+    // imageMode(CORNER);
+    // mapGraph = get(left_pos, top_pos, env.w + 1, env.h + 1);
+    // } else {
+    //     image(mapGraph, left_pos, top_pos);
+    // }
+}
+
+function drawButtons() {
+    for (var i = 0; i < components.length; i++) {
+        components[i].show();
     }
 }
 
 function draw() {
     // env.show();
-    if (isReady) {
 
+    if (isMapReady) {
         drawMap();
+        drawButtons();
+    }
+
+    if (isAlgReady) {
 
         if (frameCount % 30 == 0) {
-            env.showImg();
 
             for (var agent of agentObjs) {
                 agent.stepOff(curT - 1);

@@ -1,7 +1,7 @@
 // 记得统一函数和变量的命名规范
 
 class Environment {
-    constructor(dimension, agents, wallRatio, obstacles = []) {
+    constructor(dimension, agents, wallRatio = 0.1, obstacles = []) {
         this.dimension = dimension; //[cols, rows]
         this.wallRatio = wallRatio;
         this.obstacles = obstacles;
@@ -14,6 +14,7 @@ class Environment {
         this.agent_dict = {};
 
         this.initGrid();
+        this.setStartEnd();
         this.makeAgentDict();
 
         this.constraints = new Constraints(); //记录当前使用环境的Agent的Constraint
@@ -254,7 +255,9 @@ class Environment {
             for (var j = 0; j < this.dimension[1]; j++) { //row
                 var isWall = random(1.0) < this.wallRatio;
                 this.grid[i][j] = new Cell(i, j, isWall);
-                this.obstacles.push([i, j]);
+                if (isWall) {
+                    this.obstacles.push([i, j]);
+                }
             }
         }
     }
@@ -275,11 +278,12 @@ class Environment {
         translate(left_pos, top_pos);
         // 画线
         strokeWeight(2);
+        stroke(51);
         for (var i = 0; i <= this.dimension[0]; i++) {
-            line(i * cellw, 0, i * cellw, maph);
+            line(i * cellw, 0, i * cellw, this.h);
         }
         for (var i = 0; i <= this.dimension[1]; i++) {
-            line(0, i * cellh, mapw, i * cellh);
+            line(0, i * cellh, this.w, i * cellh);
         }
 
         translate(-left_pos, -top_pos);
@@ -289,6 +293,8 @@ class Environment {
     showBlock() {
         translate(left_pos, top_pos);
         // 画障碍物
+        strokeWeight(2);
+        stroke(51);
         for (var i = 0; i < this.obstacles.length; i++) {
             let x = this.obstacles[i][0];
             let y = this.obstacles[i][1];
@@ -300,18 +306,31 @@ class Environment {
     showImg() {
         translate(left_pos, top_pos);
         // 画起点和终点
+        strokeWeight(2);
+        stroke(51);
         for (let agent of this.agents) {
             let color = agent['color'];
             let sx = agent['start'][0];
             let sy = agent['start'][1];
-            this.grid[sx][sy].type = 2;
             this.grid[sx][sy].show(color);
             let gx = agent['goal'][0];
             let gy = agent['goal'][1];
-            this.grid[gx][gy].type = 3;
             this.grid[gx][gy].show(color);
 
         }
         translate(-left_pos, -top_pos);
+    }
+
+    setStartEnd() {
+        for (let agent of this.agents) {
+            let sx = agent['start'][0];
+            let sy = agent['start'][1];
+            this.grid[sx][sy].type = 2;
+            this.removeObstacle(sx, sy);
+            let gx = agent['goal'][0];
+            let gy = agent['goal'][1];
+            this.grid[gx][gy].type = 3;
+            this.removeObstacle(gx, gy);
+        }
     }
 }
