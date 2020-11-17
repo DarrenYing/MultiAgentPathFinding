@@ -1,14 +1,19 @@
 // 记得统一函数和变量的命名规范
 
 class Environment {
-    constructor(dimension, agents, obstacles) {
+    constructor(dimension, agents, wallRatio, obstacles = []) {
         this.dimension = dimension; //[cols, rows]
+        this.wallRatio = wallRatio;
         this.obstacles = obstacles;
         this.grid = []; //记录地图每个点的状态
+
+        this.w = dimension[0] * cellw;
+        this.h = dimension[1] * cellh;
 
         this.agents = agents;
         this.agent_dict = {};
 
+        this.initGrid();
         this.makeAgentDict();
 
         this.constraints = new Constraints(); //记录当前使用环境的Agent的Constraint
@@ -242,9 +247,32 @@ class Environment {
         return totalCost;
     }
 
+    // 初始化Cell
+    initGrid() {
+        for (var i = 0; i < this.dimension[0]; i++) { //col
+            this.grid[i] = [];
+            for (var j = 0; j < this.dimension[1]; j++) { //row
+                var isWall = random(1.0) < this.wallRatio;
+                this.grid[i][j] = new Cell(i, j, isWall);
+                this.obstacles.push([i, j]);
+            }
+        }
+    }
+
+    // 删除指定block
+    removeObstacle(x, y) {
+        for (var i = 0; i < this.obstacles.length; i++) {
+            if (x == this.obstacles[i][0] && y == this.obstacles[i][1]) {
+                this.obstacles.splice(i, 1);
+                return;
+            }
+        }
+    }
+
+
     // 显示地图
-    show() {
-        translate(left_pos,top_pos);
+    showGrid() {
+        translate(left_pos, top_pos);
         // 画线
         strokeWeight(2);
         for (var i = 0; i <= this.dimension[0]; i++) {
@@ -254,26 +282,23 @@ class Environment {
             line(0, i * cellh, mapw, i * cellh);
         }
 
-        for (var i = 0; i < this.dimension[0]; i++) {
-            this.grid[i] = [];
-            for (var j = 0; j < this.dimension[1]; j++) {
-                this.grid[i][j] = new Cell(i, j);
-            }
-        }
+        translate(-left_pos, -top_pos);
 
+    }
+
+    showBlock() {
+        translate(left_pos, top_pos);
         // 画障碍物
         for (var i = 0; i < this.obstacles.length; i++) {
             let x = this.obstacles[i][0];
             let y = this.obstacles[i][1];
-            this.grid[x][y].type = 1;
             this.grid[x][y].show();
         }
-        translate(-left_pos,-top_pos);
-
+        translate(-left_pos, -top_pos);
     }
 
     showImg() {
-        translate(left_pos,top_pos);
+        translate(left_pos, top_pos);
         // 画起点和终点
         for (let agent of this.agents) {
             let color = agent['color'];
@@ -287,6 +312,6 @@ class Environment {
             this.grid[gx][gy].show(color);
 
         }
-        translate(-left_pos,-top_pos);
+        translate(-left_pos, -top_pos);
     }
 }

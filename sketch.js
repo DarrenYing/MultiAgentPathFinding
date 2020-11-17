@@ -28,6 +28,7 @@ var curAgent;
 var inputRow;
 var inputCol;
 var wallPercent;
+var mapBtn;
 
 var radioStart;
 var radioEnd;
@@ -37,15 +38,42 @@ var flagStart;
 var flagEnd;
 var flagBlock;
 
+// 控制类变量
+var status;
+var paused;
+var stepsAllowed = 0;
+var components = [];
+var runPauseButton;
+var stepButton;
+var resetButton;
+
 
 function setup() {
 
-    //输入
-    var dimension = [20, 20];
-    var obstacles = [
-        [0, 1],
-        [2, 1]
-    ];
+    //用户输入
+    inputRow = select('#row');
+    inputCol = select('#col');
+    wallPercent = select('#blockPercent');
+
+    radioStart = select('#start');
+    radioEnd = select('#end');
+    radioBlock = select('#block');
+
+    mapBtn = select('#gmap');
+    mapBtn.mousePressed(initCanvas);
+
+}
+
+function initCanvas() {
+    var rows = inputRow.value();
+    var cols = inputCol.value();
+    var wallRatio = wallPercent.value();
+
+    var canvasWidth = cellw * cols + 100;
+    canvas = createCanvas(canvasWidth, canvasWidth);
+    canvas.position(screen.availWidth / 2 - canvasWidth / 2, 100);
+
+    var dimension = [cols, rows]; //col, row
     var agents = [{
         'start': [0, 0],
         'goal': [17, 2],
@@ -57,59 +85,184 @@ function setup() {
         'name': 'agent1',
         'color': [0, 255, 0]
     }];
+    env = new Environment(dimension, agents, wallRatio);
+    env.showGrid();
 
-    mapw = dimension[0] * cellw;
-    maph = dimension[1] * cellh;
+    // for (var agent of agents) {
+    //     var path = solution[agent['name']];
+    //     var o = new Agent(agent['start'], agent['goal'], agent['name'], agent['color'], path);
+    //     if (path.length > maxT) {
+    //         maxT = path.length;
+    //     }
+    //     agentObjs.push(o);
+    // }
 
-    var canvasWidth = mapw + 100;
-    canvas = createCanvas(canvasWidth, canvasWidth);
-    canvas.position(screen.availWidth / 2 - canvasWidth / 2, 100);
+    paused = true;
 
-    env = new Environment(dimension, agents, obstacles);
+    initSearch();
 
+    // removeOrgButton(runPauseButton);
+    runPauseButton = new Button("运行", env.w + 30, 20, 50, 30, runpause);
+    components.push(runPauseButton);
+
+    // // removeOrgButton(stepButton);
+    // stepButton = new Button("单步", env.w+30, 70, 50, 30, step)
+    // components.push(stepButton);
+    //
+    // // removeOrgButton(resetButton);
+    // resetButton = new Button("重置", env.w+30, 120, 50, 30, restart)
+    // components.push(resetButton);
+
+}
+
+function initSearch() {
+    mapGraph = null;
+    mapEdit = true;
+    status = "Parameter Tuning";
+
+}
+
+function pauseCheck(isPause) {
+    paused = isPause;
+    runPauseButton.label = paused ? "运行" : "暂停";
+    if (!paused) {
+        calcPath();
+        isReady = true;
+    }
+}
+
+function runpause(button) {
+    mapEdit = false;
+    pauseCheck(!paused);
+}
+
+function calcPath() {
     cbs = new CBS(env);
     solution = cbs.search();
 
     console.log(solution);
     console.log('done out!');
 
-    //初始化作图
-    env.show();
-
-    for (var agent of agents) {
-        var path = solution[agent['name']];
-        var o = new Agent(agent['start'], agent['goal'], agent['name'], agent['color'], path);
-        if (path.length > maxT) {
-            maxT = path.length;
-        }
-        agentObjs.push(o);
-    }
-
     for (var agent of agentObjs) {
         if (agent.path.length < maxT) {
             agent.fullFillPath(maxT);
         }
     }
+}
 
+function checkRadio() {
+    if (radioStart.elt.checked) {
+        flagStart = true;
+        flagEnd = false;
+        flagBlock = false;
+    } else if (radioEnd.elt.checked) {
+        flagEnd = true;
+        flagStart = false;
+        flagBlock = false;
+    } else {
+        flagBlock = true;
+        flagStart = false;
+        flagEnd = false;
+    }
+}
+
+function mouseClicked() {
+    for (var i = 0; i < components.length; i++) {
+        components[i].mouseClick(mouseX, mouseY);
+    }
+}
+
+function isBoundSatisfied(x, y) {
+    return x < cols && y < rows && x >= 0 && y >= 0;
+}
+
+function checkAgent() {
+    return 1;
+}
+
+function mousePressed() {
+    if (mapEdit) {
+        let x = int((mouseX - left_pos) / cellw);
+        let y = int((mouseY - top_pos) / cellh);
+        // console.log(x, y);
+        checkRadio();
+        if (isBoundSatisfied(x, y)) {
+            if (flagStart) {
+                var curAgent = checkAgent();
+                if (env.grid[x][y].type != 1) {
+                    //清除原来的start
+                    env.grid[curAgent.start[0]][curAgent.start[1]].type = 0;
+                    //设定新的start
+                    env.grid[x][y].type = 2;
+                    curAgent.start = [x, y];
+                }
+            } else if (flagEnd) {
+                var curAgent = checkAgent();
+                if (env.grid[x][y].type != 1) {
+                    //清除原来的start
+                    env.grid[curAgent.end[0]][curAgent.end[1]].type = 0;
+                    //设定新的start
+                    env.grid[x][y].type = 3;
+                    curAgent.start = [x, y];
+                }
+            } else {
+                var tmpFlag = true;
+                for (var agent of agentObjs) {
+                    if ((x == agent.start[0] && y == agent1.start[1]) ||
+                        (x == agent1.end[0] && y == agent1.end[1])) {
+                        tmpFlag = false;
+                    }
+                }
+                if (tmpFlag) {
+                    if (env.grid[x][y].type == 1) {
+                        env.removeObstacle(x, y);
+                    } else {
+                        env.obstacles.push([x, y]);
+                    }
+                    env.grid[x][y].toggleWall();
+                }
+
+            }
+        }
+    }
+}
+
+function drawMap() {
+    if (mapEdit) {
+        for (var i = 0; i < cols; i++) {
+            for (var j = 0; j < rows; j++) {
+                env.grid[i][j].show();
+            }
+        }
+        mapGraph = get(left_pos, top_pos, env.w + 1, env.h + 1);
+    } else {
+        image(mapGraph, left_pos, top_pos);
+    }
 }
 
 function draw() {
     // env.show();
+    if (isReady) {
 
-    if (frameCount % 30 == 0) {
-        env.showImg();
+        drawMap();
 
-        for (var agent of agentObjs) {
-            agent.stepShow(curT);
+        if (frameCount % 30 == 0) {
+            env.showImg();
+
+            for (var agent of agentObjs) {
+                agent.stepOff(curT - 1);
+            }
+
+            for (var agent of agentObjs) {
+                agent.stepShow(curT);
+            }
+
+            if (curT < maxT - 1) {
+                curT += 1;
+            }
+
         }
-
-        if (curT < maxT - 1) {
-            curT += 1;
-        }
-
     }
-
-
 
 
 }

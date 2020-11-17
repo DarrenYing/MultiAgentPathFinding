@@ -23,12 +23,15 @@ class Agent {
         let curx = this.path[t]['x'];
         let cury = this.path[t]['y'];
 
-        translate(left_pos,top_pos);
+        translate(left_pos, top_pos);
+
         var imgSize = 3 * cellw / 4;
         imageMode(CENTER);
         tint(this.color[0], this.color[1], this.color[2]);
         image(this.agentImg, curx * cellw + cellw / 2, cury * cellh + cellh / 2, imgSize, imgSize);
-        translate(-left_pos,-top_pos);
+
+
+        translate(-left_pos, -top_pos);
 
         // console.log(x, y);
         // console.log(this.agentImg);
@@ -36,6 +39,23 @@ class Agent {
     }
 
     // 消除上一步的图像
+    stepOff(t) {
+        if (t < 1){
+          return;
+        }
+        let curx = this.path[t]['x'];
+        let cury = this.path[t]['y'];
+
+        translate(left_pos, top_pos);
+
+        var imgSize = 3 * cellw / 4;
+        imageMode(CENTER);
+        tint(255);
+        image(this.agentImg, curx * cellw + cellw / 2, cury * cellh + cellh / 2, imgSize, imgSize);
+
+
+        translate(-left_pos, -top_pos);
+    }
 
 
 }
