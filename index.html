@@ -12,16 +12,74 @@
 				margin: 0px;
 				padding: 0px;
 			}
+
+			.settings {
+				margin-top: 50px;
+				display: flex;
+				justify-content: center;
+			}
+
+			.agentBox {
+				width: 160px;
+				margin-right: 10px;
+			}
+
+			.userInput {
+				width: 50px;
+				margin-right: 10px;
+			}
+
+			#row {
+				display: inline-block;
+			}
+
+			#gmap {
+				margin-left: 50px;
+			}
+
+			.btnBox {
+				margin-right: 30px;
+			}
+
+			.btnBox >input {
+				margin-left: 10px;
+			}
 		</style>
 
 
 
 	</head>
 	<body>
+
+		<div class="settings">
+			<div class="agentBox">
+				<label>选择Agent: </label>
+				<select id="sel">
+					<option value="agent1" id="sel1">Agent1</option>
+					<option value="agent2" id="sel2">Agent2</option>
+					<!-- 加一个按钮，增加Agent，然后动态改变select长度 -->
+				</select>
+			</div>
+			<div class="btnBox">
+				<input type="radio" name="group1" value="1" id="start"><label for="start">起点</label>
+				<input type="radio" name="group1" value="2" id="end"><label for="end">终点</label>
+				<input type="radio" name="group1" value="3" id="block" checked="checked"><label for="block">障碍物</label>
+			</div>
+			<div class="inputbox">
+				<label>行数: </label><input type="text" id="row" class="userInput" value="20">
+				<label>列数: </label><input type="text" id="col" class="userInput" value="20">
+				<label>障碍物比例: </label><input type="text" id="blockPercent" class="userInput" value="0.1">
+				<button type="button" id="gmap">生成地图</button>
+			</div>
+		</div>
+
+
 		<script src="sketch.js" charset="utf-8"></script>
 		<script src="BasicConfigs.js" charset="utf-8"></script>
 		<script src="Environment.js" charset="utf-8"></script>
 		<script src="AStar.js" charset="utf-8"></script>
 		<script src="CBS.js" charset="utf-8"></script>
+		<script src="Cell.js" charset="utf-8"></script>
+		<script src="Agent.js" charset="utf-8"></script>
 	</body>
 </html>

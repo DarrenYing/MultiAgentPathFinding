@@ -68,8 +68,7 @@ class CBS {
                 //此处有错误，需要修正
                 if (!this.isInArray(this.openSet, newNode)) {
                     this.openSet.push(newNode);
-                }
-                else{
+                } else {
                     console.log('111111');
                 }
 
@@ -90,11 +89,11 @@ class CBS {
         return false;
     }
 
-    solCmp(obj, other){
+    solCmp(obj, other) {
         var path1 = cbs.generatePlan(obj.solution);
         var path2 = cbs.generatePlan(other.solution);
-        for (var agent in path1){
-            if(JSON.stringify(path1[agent]) != JSON.stringify(path2[agent])){
+        for (var agent in path1) {
+            if (JSON.stringify(path1[agent]) != JSON.stringify(path2[agent])) {
                 return false;
             }
         }
@@ -126,6 +125,11 @@ class CBS {
                     'x': state.location.x,
                     'y': state.location.y
                 };
+                // var item = {};
+                // item[state.time] = {
+                //     'x': state.location.x,
+                //     'y': state.location.y
+                // };
                 list.push(item);
                 plan[agent] = list; //该条agent的执行路径
             }
