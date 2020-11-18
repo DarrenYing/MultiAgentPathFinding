@@ -2,7 +2,7 @@ class Cell {
     constructor(x, y, isWall = false) {
         this.x = x;
         this.y = y;
-        this.isWall = isWall;
+        // this.isWall = isWall;
 
         // 0-空白格 1-障碍物 2-起点 3-终点 4-Agent
         this.type = int(isWall);

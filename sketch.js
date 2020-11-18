@@ -34,10 +34,12 @@ var flagStart;
 var flagEnd;
 var flagBlock;
 
+var addCarBtn;
 var selBox;
 var curAgent;
 
 // 控制类变量
+var myFont;
 var status;
 var paused;
 var stepsAllowed = 0;
@@ -50,6 +52,7 @@ var resetButton;
 function setup() {
 
     //用户输入
+    addCarBtn = select('#addCar');
     selBox = select('#sel');
 
     inputRow = select('#row');
@@ -62,6 +65,10 @@ function setup() {
 
     mapBtn = select('#gmap');
     mapBtn.mousePressed(initCanvas);
+    addCarBtn.mousePressed(addAgent);
+
+    //加载字体
+    myFont = loadFont('assets/YaHei.Consolas.1.12.ttf'); //微软雅黑+Consolas混合
 
 }
 
@@ -109,9 +116,9 @@ function initCanvas() {
     runPauseButton = new Button("运行", env.w + 30, 20, 50, 30, runpause);
     components.push(runPauseButton);
 
-    // removeOrgButton(stepButton);
-    // stepButton = new Button("单步", env.w+30, 70, 50, 30, step)
-    // components.push(stepButton);
+    removeOrgButton(stepButton);
+    stepButton = new Button("单步", env.w + 30, 70, 50, 30, step)
+    components.push(stepButton);
 
     removeOrgButton(resetButton);
     resetButton = new Button("重置", env.w + 30, 120, 50, 30, restart)
@@ -121,6 +128,43 @@ function initCanvas() {
 
     // calcPath();
     // isAlgReady = true;
+}
+
+function addAgent() {
+    var newAgentName = selBox.elt.options[selBox.elt.length - 1].value;
+    var newAgent = new Agent(pickPos(2), pickPos(3), newAgentName, pickColor());
+    agentObjs.push(newAgent);
+    env.makeAgentDict();
+}
+
+function pickPos(flag) {
+    if (!isMapReady) {
+        console.log('请先生成地图!');
+        return -1;
+    }
+
+    var col = floor(random(0, env.dimension[0]));
+    var row = floor(random(0, env.dimension[1]));
+    if (env.grid[col][row].type == 1) {
+        env.removeObstacle(col, row);
+        //清除原来的障碍物图像
+        env.grid[col][row].type = 0;
+        translate(left_pos, top_pos);
+        env.grid[col][row].show();
+        translate(-left_pos, -top_pos);
+    }
+    env.grid[col][row].type = flag;
+    var pos = [col, row];
+    return pos;
+}
+
+function pickColor() {
+    if (!isMapReady) {
+        console.log('请先生成地图!');
+        return -1;
+    }
+    var newColor = [floor(random(40, 240)), floor(random(40, 240)), floor(random(40, 240))];
+    return newColor;
 }
 
 function initSearch() {
@@ -141,6 +185,32 @@ function pauseCheck(isPause) {
 function runpause(button) {
     mapEdit = false;
     pauseCheck(!paused);
+}
+
+function step(button) {
+    mapEdit = false;
+    pauseCheck(true); //暂停
+    stepsAllowed = 1;
+}
+
+function stepSearch() {
+    if (!paused || stepsAllowed > 0) {
+        if (frameCount % 30 == 0) {
+            stepsAllowed--;
+            for (var agent of agentObjs) {
+                agent.stepOff(curT - 1);
+            }
+            for (var agent of agentObjs) {
+                agent.stepShow(curT);
+            }
+            if (curT < maxT - 1) {
+                curT += 1;
+                status = 'still Searching';
+            } else {
+                status = 'all Reached';
+            }
+        }
+    }
 }
 
 function restart(button) {
@@ -172,6 +242,7 @@ function calcPath() {
     if (!Object.keys(solution).length || solution == -1) {
         status = "No Solution!"
         console.log(status);
+        runpause();
         noLoop();
         return;
     } else {
@@ -310,32 +381,29 @@ function drawButtons() {
     }
 }
 
+function drawStatus(){
+  textSize(16);
+  textFont(myFont);
+  //清除原来的状态
+  fill(255);
+  rectMode(CORNER);
+  rect(left_pos, env.h+30, 300, 300);
+  //写上新的状态
+  stroke(0);
+  fill(0);
+  text("当前状态:" + status, left_pos, env.h + 50);
+}
+
 function draw() {
     // env.show();
 
     if (isMapReady) {
         drawMap();
         drawButtons();
+        drawStatus();
     }
 
-    if (!paused) {
-
-        if (frameCount % 30 == 0) {
-
-            for (var agent of agentObjs) {
-                agent.stepOff(curT - 1);
-            }
-
-            for (var agent of agentObjs) {
-                agent.stepShow(curT);
-            }
-
-            if (curT < maxT - 1) {
-                curT += 1;
-            }
-
-        }
-    }
+    stepSearch();
 
 
 }
