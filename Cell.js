@@ -19,7 +19,9 @@ class Cell {
         switch (this.type) {
             case 0:
                 fill(255);
-                rect(this.x * cellw, this.y * cellh, cellw, cellh);
+                rectMode(CENTER);
+                rect(this.x * cellw+cellw/2, this.y * cellh+cellh/2, cellw-1, cellh-1);
+                rectMode(CORNER);
                 break;
             case 1:
                 fill(100);

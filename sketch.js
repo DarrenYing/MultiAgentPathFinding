@@ -34,7 +34,9 @@ var flagStart;
 var flagEnd;
 var flagBlock;
 
+var carName;
 var addCarBtn;
+var delCarBtn;
 var selBox;
 var curAgent;
 
@@ -52,7 +54,9 @@ var resetButton;
 function setup() {
 
     //用户输入
+    carName = select('#agentName');
     addCarBtn = select('#addCar');
+    delCarBtn = select('#delCar');
     selBox = select('#sel');
 
     inputRow = select('#row');
@@ -66,6 +70,7 @@ function setup() {
     mapBtn = select('#gmap');
     mapBtn.mousePressed(initCanvas);
     addCarBtn.mousePressed(addAgent);
+    delCarBtn.mousePressed(removeAgent);
 
     //加载字体
     myFont = loadFont('assets/YaHei.Consolas.1.12.ttf'); //微软雅黑+Consolas混合
@@ -81,7 +86,7 @@ function initCanvas() {
 
     var canvasWidth = cellw * cols + 100;
     canvas = createCanvas(canvasWidth, canvasWidth);
-    canvas.position(screen.availWidth / 2 - canvasWidth / 2, 100);
+    canvas.position(screen.availWidth / 2 - canvasWidth / 2, 120);
 
     var dimension = [cols, rows]; //col, row
     if (!agentObjs.length) {
@@ -131,10 +136,43 @@ function initCanvas() {
 }
 
 function addAgent() {
-    var newAgentName = selBox.elt.options[selBox.elt.length - 1].value;
+    var newAgentName = carName.value();
     var newAgent = new Agent(pickPos(2), pickPos(3), newAgentName, pickColor());
     agentObjs.push(newAgent);
     env.makeAgentDict();
+}
+
+function removeAgent() {
+    var name = carName.value();
+    var todel = -1;
+    for (var i = selBox.elt.options.length - 1; i >= 0; i--) {
+        if (selBox.elt.options[i].value == name) {
+            todel = i;
+            // selBox.elt.options.remove(i);
+            break;
+        }
+    }
+
+    if (todel != -1) {
+        var todelAgent = agentObjs[todel];
+        //清除其起点和终点
+        env.grid[todelAgent.start[0]][todelAgent.start[1]].type = 0;
+        translate(left_pos, top_pos);
+        env.grid[todelAgent.start[0]][todelAgent.start[1]].show();
+        // translate(-left_pos, -top_pos);
+        env.grid[todelAgent.goal[0]][todelAgent.goal[1]].type = 0;
+        // translate(left_pos, top_pos);
+        env.grid[todelAgent.goal[0]][todelAgent.goal[1]].show();
+        translate(-left_pos, -top_pos);
+        //从Agent数组中删除
+        _.pull(agentObjs, todelAgent);
+        env.makeAgentDict();
+        //从界面选项中删除
+        selBox.elt.options.remove(i);
+    } else {
+        console.log('该小车不存在!');
+    }
+
 }
 
 function pickPos(flag) {
@@ -145,6 +183,10 @@ function pickPos(flag) {
 
     var col = floor(random(0, env.dimension[0]));
     var row = floor(random(0, env.dimension[1]));
+    while (env.grid[col][row].type == 2 || env.grid[col][row].type == 3) {
+        col = floor(random(0, env.dimension[0]));
+        row = floor(random(0, env.dimension[1]));
+    }
     if (env.grid[col][row].type == 1) {
         env.removeObstacle(col, row);
         //清除原来的障碍物图像
@@ -381,17 +423,17 @@ function drawButtons() {
     }
 }
 
-function drawStatus(){
-  textSize(16);
-  textFont(myFont);
-  //清除原来的状态
-  fill(255);
-  rectMode(CORNER);
-  rect(left_pos, env.h+30, 300, 300);
-  //写上新的状态
-  stroke(0);
-  fill(0);
-  text("当前状态:" + status, left_pos, env.h + 50);
+function drawStatus() {
+    textSize(16);
+    textFont(myFont);
+    //清除原来的状态
+    fill(255);
+    rectMode(CORNER);
+    rect(left_pos, env.h + 30, 300, 300);
+    //写上新的状态
+    stroke(0);
+    fill(0);
+    text("当前状态:" + status, left_pos, env.h + 50);
 }
 
 function draw() {
