@@ -46,16 +46,22 @@ var speedBtn;
 // 控制类变量
 var myFont;
 var status;
-var paused;
+var paused = true;
 var stepsAllowed = 0;
 var components = [];
 var runPauseButton;
 var stepButton;
 var resetButton;
-var agentSpeed = 33;
+var agentSpeed = 40;
+
+// 计时相关变量
+var t;
+var timings = {};
 
 
 function setup() {
+
+    // startTime();
 
     //用户输入
     carName = select('#agentName');
@@ -84,6 +90,7 @@ function setup() {
     //加载字体
     myFont = loadFont('assets/YaHei.Consolas.1.12.ttf'); //微软雅黑+Consolas混合
 
+    // recordTime('Set Up');
 }
 
 function initCanvas() {
@@ -94,7 +101,8 @@ function initCanvas() {
     // var curAgent = selBox.elt.value;
 
     var canvasWidth = cellw * cols + 100;
-    canvas = createCanvas(canvasWidth, canvasWidth);
+    var canvasHeight = cellh * rows + 150;
+    canvas = createCanvas(canvasWidth, canvasHeight);
     canvas.position(screen.availWidth / 2 - canvasWidth / 2, 120);
 
     var dimension = [cols, rows]; //col, row
@@ -144,6 +152,43 @@ function initCanvas() {
     // isAlgReady = true;
 }
 
+//清空记录
+function clearTimings() {
+    timings = {};
+}
+
+//开始记录
+function startTime() {
+    t = millis(); //精确到毫秒
+}
+
+//记录时间点
+function recordTime(moment) {
+    if (!timings[moment]) {
+        timings[moment] = {
+            sum: millis() - t,
+            count: 1,
+        }
+    } else {
+        timings[moment].sum += millis() - t;
+        timings[moment].count += 1;
+    }
+}
+
+//打印时间
+function logTimings() {
+    for (var moment in timings) {
+        if (timings.hasOwnProperty(moment)) {
+            if (timings[moment].sum > 1000) {
+                var tmpSum = round(timings[moment].sum / 1000, 3);
+                console.log(moment + ": " + tmpSum.toString() + "s"); //应该是每个agent一个时间
+            } else {
+                console.log(moment + ": " + (round(timings[moment].sum, 3)).toString() + "ms");
+            }
+        }
+    }
+}
+
 function addAgent() {
 
 
@@ -162,7 +207,7 @@ function addAgent() {
         var newAgent = new Agent(pickPos(2), pickPos(3), newAgentName, pickColor());
         agentObjs.push(newAgent);
         env.makeAgentDict();
-    }else{
+    } else {
         console.log('名字重复，请换一个吧!');
     }
 }
@@ -228,11 +273,11 @@ function pickColor() {
     return newColor;
 }
 
-function updateSpeed(){
+function updateSpeed() {
     var val = inputSpeed.value();
-    if (val<=100 && val>=1){
+    if (val <= 100 && val >= 1) {
         agentSpeed = floor(map(val, 1, 100, 80, 2));
-    }else{
+    } else {
         alert('请输入1-100之间的数字');
     }
 
@@ -249,6 +294,7 @@ function pauseCheck(isPause) {
     runPauseButton.label = paused ? "运行" : "暂停";
     if (!paused) {
         calcPath();
+        startTime(); //开始记录在地图上运行的时间
         // isAlgReady = true;
     }
 }
@@ -266,6 +312,7 @@ function step(button) {
 
 function stepSearch() {
     if (!paused || stepsAllowed > 0) {
+
         if (frameCount % agentSpeed == 0) {
             stepsAllowed--;
             for (var agent of agentObjs) {
@@ -274,18 +321,25 @@ function stepSearch() {
             for (var agent of agentObjs) {
                 agent.stepShow(curT);
             }
+
             if (curT < maxT - 1) {
                 curT += 1;
                 status = 'still Searching';
             } else {
+                recordTime('Execution On Map');
                 status = 'all Reached';
+                runpause(true);
+                logTimings();
             }
         }
+
     }
 }
 
 function restart(button) {
     //重置状态
+    // logTimings();
+    clearTimings();
     initSearch();
     pauseCheck(true);
     console.log(curT);
@@ -304,20 +358,23 @@ function removeOrgButton(btn) {
 }
 
 function calcPath() {
+    startTime();
     cbs = new CBS(env);
     solution = cbs.search();
+    recordTime('Calculate Plan');
 
     console.log(solution);
     console.log('done out!');
 
     if (!Object.keys(solution).length || solution == -1) {
         status = "No Solution!"
-        console.log(status);
+        // console.log(status);
+        // logTimings();
         runpause();
         noLoop();
         return;
     } else {
-
+        // TODO:补全路径，需要修改!
         for (var agent of agentObjs) {
             agent.path = solution[agent.name];
             if (agent.path.length > maxT) {
@@ -456,6 +513,37 @@ function drawStatus() {
     text("当前状态:" + status, left_pos, env.h + 50);
 }
 
+function drawTimings() {
+    textSize(16);
+    textFont(myFont);
+    //清除原来的时间画布
+    fill(255);
+    stroke(255);
+    rectMode(CORNER);
+    rect(left_pos + env.w / 2, env.h + 30, 300, 300);
+    stroke(0);
+    fill(0);
+    for (var moment in timings) {
+        if (timings.hasOwnProperty(moment)) {
+            switch (moment) {
+                // case "Set Up":
+                //     text(moment + ": " + (round(timings[moment].sum, 3)).toString() + "ms", left_pos + env.w / 2, env.h + 50);
+                //     break;
+                case "Calculate Plan":
+                    text(moment + ": " + (round(timings[moment].sum, 3)).toString() + "ms", left_pos + env.w / 2, env.h + 50);
+                    break;
+                case "Execution On Map":
+                    var tmpSum = round(timings[moment].sum / 1000, 3);
+                    text(moment + ": " + tmpSum.toString() + "s", left_pos + env.w / 2, env.h + 75);
+                    break;
+                default:
+                    break;
+            }
+
+        }
+    }
+}
+
 function draw() {
     // env.show();
 
@@ -463,6 +551,7 @@ function draw() {
         drawMap();
         drawButtons();
         drawStatus();
+        drawTimings();
     }
 
     stepSearch();
