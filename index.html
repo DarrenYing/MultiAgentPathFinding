@@ -34,7 +34,7 @@
 		}
 
 		.agentBox {
-			width: 450px;
+			width: 480px;
 			margin-right: 10px;
 			border: red 2px solid;
 			padding: 5px;
@@ -57,7 +57,8 @@
 			font-size: 16px;
 		}
 
-		.inputbox {
+		.inputBox {
+			margin-right: 10px;
 			border: green 2px solid;
 			padding: 5px;
 		}
@@ -84,6 +85,12 @@
 		.btnBox>input {
 			margin-left: 10px;
 		}
+
+		.speedBox {
+			border:purple 2px solid;
+			padding: 5px;
+		}
+
 	</style>
 
 
@@ -112,35 +119,39 @@
 		</div>
 	</div>
 	<div class="settings">
-		<div class="inputbox">
+		<div class="inputBox">
 			<label>行数: </label><input type="text" id="row" class="userInput" value="20">
 			<label>列数: </label><input type="text" id="col" class="userInput" value="20">
 			<label>障碍物比例: </label><input type="text" id="blockPercent" class="userInput" value="0.1">
 			<button type="button" id="gmap">生成地图</button>
+		</div>
+		<div class="speedBox">
+			<label>速度(1-100): </label><input type="text" id="speed" class="userInput" value="30">
+			<input type="button" id="speedBtn" value="确认生效">
 		</div>
 	</div>
 
 
 
 	<script type="text/javascript">
-		var addCarBtn = document.getElementById('addCar');
-		addCarBtn.onclick = function() {
-			var name = document.getElementById('agentName').value;
-			var sel = document.getElementById('sel');
+		// var addCarBtn = document.getElementById('addCar');
+		// addCarBtn.onclick = function() {
+		// 	var name = document.getElementById('agentName').value;
+		// 	var sel = document.getElementById('sel');
+		//
+		// 	for (var i = 0; i < sel.options.length; i++) {
+		// 		if (sel.options[i].value == name) {
+		// 			alert('名字重复，请换一个吧!');
+		// 			return;
+		// 		}
+		// 	}
+		//
+		// 	var option = new Option(name);
+		// 	option.className = 'agentOption';
+		// 	sel.options[sel.length] = option;
+		// }
 
-			for (var i = 0; i < sel.options.length; i++) {
-				if (sel.options[i].value == name) {
-					alert('名字重复，请换一个吧!');
-					return;
-				}
-			}
 
-			var option = new Option(name);
-			option.className = 'agentOption';
-			sel.options[sel.length] = option;
-		}
-
-		
 		// $(function() {
 		// 	// 初始化
 		// 	$("#addcar").click(function() {

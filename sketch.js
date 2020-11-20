@@ -40,6 +40,9 @@ var delCarBtn;
 var selBox;
 var curAgent;
 
+var inputSpeed;
+var speedBtn;
+
 // 控制类变量
 var myFont;
 var status;
@@ -49,6 +52,7 @@ var components = [];
 var runPauseButton;
 var stepButton;
 var resetButton;
+var agentSpeed = 33;
 
 
 function setup() {
@@ -69,8 +73,13 @@ function setup() {
 
     mapBtn = select('#gmap');
     mapBtn.mousePressed(initCanvas);
+
+    inputSpeed = select('#speed');
+    speedBtn = select('#speedBtn');
+
     addCarBtn.mousePressed(addAgent);
     delCarBtn.mousePressed(removeAgent);
+    speedBtn.mousePressed(updateSpeed);
 
     //加载字体
     myFont = loadFont('assets/YaHei.Consolas.1.12.ttf'); //微软雅黑+Consolas混合
@@ -92,12 +101,12 @@ function initCanvas() {
     if (!agentObjs.length) {
         var agents = [{
             'start': [0, 0],
-            'goal': [17, 2],
+            'goal': [7, 2],
             'name': 'agent1',
             'color': [255, 0, 0]
         }, {
             'start': [2, 0],
-            'goal': [0, 12],
+            'goal': [0, 9],
             'name': 'agent2',
             'color': [0, 255, 0]
         }];
@@ -136,10 +145,26 @@ function initCanvas() {
 }
 
 function addAgent() {
+
+
+    var flag = 1;
     var newAgentName = carName.value();
-    var newAgent = new Agent(pickPos(2), pickPos(3), newAgentName, pickColor());
-    agentObjs.push(newAgent);
-    env.makeAgentDict();
+    for (var i = 0; i < selBox.elt.options.length; i++) {
+        if (selBox.elt.options[i].value == newAgentName) {
+            flag = 0;
+            break;
+        }
+    }
+    if (flag) {
+        var option = new Option(newAgentName);
+        option.className = 'agentOption';
+        selBox.elt.options[selBox.elt.options.length] = option;
+        var newAgent = new Agent(pickPos(2), pickPos(3), newAgentName, pickColor());
+        agentObjs.push(newAgent);
+        env.makeAgentDict();
+    }else{
+        console.log('名字重复，请换一个吧!');
+    }
 }
 
 function removeAgent() {
@@ -157,13 +182,9 @@ function removeAgent() {
         var todelAgent = agentObjs[todel];
         //清除其起点和终点
         env.grid[todelAgent.start[0]][todelAgent.start[1]].type = 0;
-        translate(left_pos, top_pos);
-        env.grid[todelAgent.start[0]][todelAgent.start[1]].show();
-        // translate(-left_pos, -top_pos);
+        env.showOneGrid(todelAgent.start[0], todelAgent.start[1]);
         env.grid[todelAgent.goal[0]][todelAgent.goal[1]].type = 0;
-        // translate(left_pos, top_pos);
-        env.grid[todelAgent.goal[0]][todelAgent.goal[1]].show();
-        translate(-left_pos, -top_pos);
+        env.showOneGrid(todelAgent.goal[0], todelAgent.goal[1]);
         //从Agent数组中删除
         _.pull(agentObjs, todelAgent);
         env.makeAgentDict();
@@ -191,9 +212,7 @@ function pickPos(flag) {
         env.removeObstacle(col, row);
         //清除原来的障碍物图像
         env.grid[col][row].type = 0;
-        translate(left_pos, top_pos);
-        env.grid[col][row].show();
-        translate(-left_pos, -top_pos);
+        env.showOneGrid(col, row);
     }
     env.grid[col][row].type = flag;
     var pos = [col, row];
@@ -207,6 +226,16 @@ function pickColor() {
     }
     var newColor = [floor(random(40, 240)), floor(random(40, 240)), floor(random(40, 240))];
     return newColor;
+}
+
+function updateSpeed(){
+    var val = inputSpeed.value();
+    if (val<=100 && val>=1){
+        agentSpeed = floor(map(val, 1, 100, 80, 2));
+    }else{
+        alert('请输入1-100之间的数字');
+    }
+
 }
 
 function initSearch() {
@@ -237,7 +266,7 @@ function step(button) {
 
 function stepSearch() {
     if (!paused || stepsAllowed > 0) {
-        if (frameCount % 30 == 0) {
+        if (frameCount % agentSpeed == 0) {
             stepsAllowed--;
             for (var agent of agentObjs) {
                 agent.stepOff(curT - 1);
@@ -330,10 +359,6 @@ function isBoundSatisfied(x, y) {
     return x < env.dimension[0] && y < env.dimension[1] && x >= 0 && y >= 0;
 }
 
-// function checkAgent() {
-//     return
-// }
-
 function getAgentByName(agentName) {
     for (var i = 0; i < agentObjs.length; i++) {
         if (agentObjs[i].name == agentName) {
@@ -358,9 +383,7 @@ function mouseClicked() {
                 if (env.grid[x][y].type != 1) {
                     //清除原来的start
                     env.grid[curAgent.start[0]][curAgent.start[1]].type = 0;
-                    translate(left_pos, top_pos);
-                    env.grid[curAgent.start[0]][curAgent.start[1]].show();
-                    translate(-left_pos, -top_pos);
+                    env.showOneGrid(curAgent.start[0], curAgent.start[1]);
                     //设定新的start
                     env.grid[x][y].type = 2;
                     curAgent.start = [x, y];
@@ -372,9 +395,7 @@ function mouseClicked() {
                 if (env.grid[x][y].type != 1) {
                     //清除原来的start
                     env.grid[curAgent.goal[0]][curAgent.goal[1]].type = 0;
-                    translate(left_pos, top_pos);
-                    env.grid[curAgent.goal[0]][curAgent.goal[1]].show();
-                    translate(-left_pos, -top_pos);
+                    env.showOneGrid(curAgent.goal[0], curAgent.goal[1]);
                     //设定新的start
                     env.grid[x][y].type = 3;
                     curAgent.goal = [x, y];
@@ -393,11 +414,10 @@ function mouseClicked() {
                     if (env.grid[x][y].type == 1) {
                         env.removeObstacle(x, y);
                     } else {
-                        console.log(env.obstacles.length);
                         env.obstacles.push([x, y]);
-                        console.log(env.obstacles.length);
                     }
                     env.grid[x][y].toggleWall();
+                    env.showOneGrid(x, y);
                     console.log(env.grid[x][y].type);
                 }
 
@@ -486,31 +506,4 @@ function test() {
     test.push(p2);
     p3 = new Location(1, 2);
     console.log(test.includes(p3));
-}
-
-function inputTest() {
-    // var dimension = [8, 8];
-    // var obstacles = [
-    //   [6, 7],
-    //   [1, 4],
-    //   [7, 7],
-    //   [2, 4],
-    //   [7, 5],
-    //   [3, 5],
-    //   [0, 0],
-    //   [5, 5],
-    //   [6, 5],
-    //   [3, 3],
-    //   [0, 7],
-    //   [6, 4]
-    // ];
-    // var agents = [{
-    //   'start': [7, 1],
-    //   'goal': [4, 0],
-    //   'name': 'agent0'
-    // }, {
-    //   'start': [2, 2],
-    //   'goal': [6, 0],
-    //   'name': 'agent1'
-    // }];
 }

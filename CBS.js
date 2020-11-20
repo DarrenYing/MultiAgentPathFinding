@@ -22,8 +22,9 @@ class CBS {
 
         this.openSet.push(start);
 
-
-        while (this.openSet.length) {
+        var count = 0;
+        while (this.openSet.length && count<5) {
+            count++;
             var p = this.findMinCost(this.openSet);
             _.pull(this.openSet, p);
             this.closedSet.push(p);

@@ -321,6 +321,12 @@ class Environment {
         translate(-left_pos, -top_pos);
     }
 
+    showOneGrid(x, y){
+        translate(left_pos, top_pos);
+        this.grid[x][y].show();
+        translate(-left_pos, -top_pos);
+    }
+
     setStartEnd() {
         for (let agent of this.agents) {
             let sx = agent['start'][0];
