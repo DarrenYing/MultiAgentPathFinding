@@ -21,6 +21,7 @@
 
 	<meta charset="utf-8">
 
+	<link rel="stylesheet" href="indexStyle.css">
 	<style>
 		* {
 			margin: 0px;
@@ -34,14 +35,14 @@
 		}
 
 		.agentBox {
-			width: 480px;
+			/* width: 500px; */
 			margin-right: 10px;
 			border: red 2px solid;
 			padding: 5px;
 		}
 
 		#agentName {
-			width: 50px;
+			width: 80px;
 			height: 80%;
 		}
 
@@ -101,56 +102,39 @@
 
 	<div class="settings">
 		<div class="agentBox">
-			<label>小车名称: </label><input type="text" id="agentName">
-			<input type="button" id="addCar" value="添加小车">
-			<input type="button" id="delCar" value="删除小车">
-			<label>选择Agent: </label>
-			<select id="sel">
+			<label class="label">小车名称: </label><input type="text" class="input" id="agentName">
+			<button type="button" class="btn1" id="addCar">添加小车</button>
+			<button type="button" class="btn1" id="delCar">删除小车</button>
+			<label class="label">选择Agent: </label>
+			<select class="select" id="sel">
 				<option value="agent1" class="agentOption">agent1</option>
 				<option value="agent2" class="agentOption">agent2</option>
-				<!-- 加一个按钮，增加Agent，然后动态改变select长度 -->
 
 			</select>
 		</div>
 		<div class="btnBox">
-			<input type="radio" name="group1" value="1" id="start"><label for="start">起点</label>
-			<input type="radio" name="group1" value="2" id="end"><label for="end">终点</label>
-			<input type="radio" name="group1" value="3" id="block" checked="checked"><label for="block">障碍物</label>
+			<input type="radio" class="radiobtn" name="group1" value="1" id="start"><label class="radiolabel" for="start">起点</label>
+			<input type="radio" class="radiobtn" name="group1" value="2" id="end"><label class="radiolabel" for="end">终点</label>
+			<input type="radio" class="radiobtn" name="group1" value="3" id="block" checked="checked"><label class="radiolabel" for="block">障碍物</label>
 		</div>
 	</div>
 	<div class="settings">
 		<div class="inputBox">
-			<label>行数: </label><input type="text" id="row" class="userInput" value="20">
-			<label>列数: </label><input type="text" id="col" class="userInput" value="20">
-			<label>障碍物比例: </label><input type="text" id="blockPercent" class="userInput" value="0.1">
-			<button type="button" id="gmap">生成地图</button>
+			<label class="label">行数: </label><input type="text" class="input" id="row" class="userInput" value="20">
+			<label class="label">列数: </label><input type="text" class="input" id="col" class="userInput" value="20">
+			<label class="label">障碍物比例: </label><input type="text" class="input" id="blockPercent" class="userInput" value="0.1">
+			<button type="button" class="btn1" id="gmap">生成地图</button>
 		</div>
 		<div class="speedBox">
-			<label>速度(1-100): </label><input type="text" id="speed" class="userInput" value="50">
-			<input type="button" id="speedBtn" value="确认生效">
+			<label class="label">速度(1-100): </label><input type="text" class="input" id="speed" class="userInput" value="50">
+			<button type="button" class="btn1" id="speedBtn">确认生效</button>
+			<!-- <input type="button" class="btn1" id="speedBtn" value="确认生效"> -->
 		</div>
 	</div>
 
 
 
 	<script type="text/javascript">
-		// var addCarBtn = document.getElementById('addCar');
-		// addCarBtn.onclick = function() {
-		// 	var name = document.getElementById('agentName').value;
-		// 	var sel = document.getElementById('sel');
-		//
-		// 	for (var i = 0; i < sel.options.length; i++) {
-		// 		if (sel.options[i].value == name) {
-		// 			alert('名字重复，请换一个吧!');
-		// 			return;
-		// 		}
-		// 	}
-		//
-		// 	var option = new Option(name);
-		// 	option.className = 'agentOption';
-		// 	sel.options[sel.length] = option;
-		// }
-
 
 		// $(function() {
 		// 	// 初始化
