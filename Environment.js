@@ -63,7 +63,9 @@ class Environment {
         var maxTime = 0;
         var keys = [];
         for (var key in solution) {
-            keys.push(key);
+            if(!getAgentByName(key).isReached){
+                keys.push(key);
+            }
             let path = solution[key];
             maxTime = max(maxTime, path.length);
         }
@@ -170,6 +172,8 @@ class Environment {
         if (time < solution[agentName].length) {
             return solution[agentName][time];
         } else {
+            var agent = getAgentByName(agentName);
+            agent.isReached = true; //标记已到达，不再参与这轮的冲突计算
             let index = solution[agentName].length - 1;
             return solution[agentName][index];
         }
@@ -186,6 +190,7 @@ class Environment {
     }
 
     makeAgentDict() {
+        this.agent_dict = {};
         for (let agent of this.agents) {
             var startState = new State(0, new Location(agent.start[0], agent.start[1]));
             var endState = new State(0, new Location(agent.goal[0], agent.goal[1]));

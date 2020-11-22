@@ -3,6 +3,7 @@ var cbs;
 var solution;
 
 var canvas;
+var canvas2Top = 150;
 var left_pos = 10;
 var top_pos = 10;
 
@@ -58,6 +59,9 @@ var agentSpeed = 40;
 var t;
 var timings = {};
 
+//重置后如果没改变地图，就不用重新计算
+var isMapChanged;
+
 
 function setup() {
 
@@ -103,7 +107,7 @@ function initCanvas() {
     var canvasWidth = cellw * cols + 100;
     var canvasHeight = cellh * rows + 150;
     canvas = createCanvas(canvasWidth, canvasHeight);
-    canvas.position(screen.availWidth / 2 - canvasWidth / 2, 120);
+    canvas.position(screen.availWidth / 2 - canvasWidth / 2, canvas2Top);
 
     var dimension = [cols, rows]; //col, row
     if (!agentObjs.length) {
@@ -129,7 +133,7 @@ function initCanvas() {
     env.showGrid();
 
 
-
+    isMapChanged = true;
     paused = true;
 
     initSearch();
@@ -153,8 +157,16 @@ function initCanvas() {
 }
 
 //清空记录
-function clearTimings() {
-    timings = {};
+//mode=0 全部清空 mode=1 只清空execute的记录
+function clearTimings(mode=0) {
+    if(mode==0){
+        timings = {};
+    }else if(mode==1){
+        var calcTime = timings['Calculate Plan'];
+        timings = {};
+        timings['Calculate Plan'] = calcTime;
+    }
+
 }
 
 //开始记录
@@ -201,6 +213,7 @@ function addAgent() {
         }
     }
     if (flag) {
+        isMapChanged = true;
         var option = new Option(newAgentName);
         option.className = 'agentOption';
         selBox.elt.options[selBox.elt.options.length] = option;
@@ -224,6 +237,7 @@ function removeAgent() {
     }
 
     if (todel != -1) {
+        isMapChanged = true;
         var todelAgent = agentObjs[todel];
         //清除其起点和终点
         env.grid[todelAgent.start[0]][todelAgent.start[1]].type = 0;
@@ -238,6 +252,9 @@ function removeAgent() {
     } else {
         console.log('该小车不存在!');
     }
+
+    //清空输入框
+    carName.elt.value = "";
 
 }
 
@@ -293,7 +310,10 @@ function pauseCheck(isPause) {
     paused = isPause;
     runPauseButton.label = paused ? "运行" : "暂停";
     if (!paused) {
-        calcPath();
+        if (isMapChanged) {
+            clearTimings();
+            calcPath();
+        }
         startTime(); //开始记录在地图上运行的时间
         // isAlgReady = true;
     }
@@ -339,15 +359,17 @@ function stepSearch() {
 function restart(button) {
     //重置状态
     // logTimings();
-    clearTimings();
+    clearTimings(1);
     initSearch();
     pauseCheck(true);
     console.log(curT);
     for (var agent of agentObjs) {
         agent.stepOff(curT - 1);
         agent.stepOff(curT);
+        agent.isReached = false;
     }
     curT = 0;
+    isMapChanged = false;
 }
 
 function removeOrgButton(btn) {
@@ -434,6 +456,7 @@ function mouseClicked() {
         // console.log(x, y);
         checkRadio();
         if (isBoundSatisfied(x, y)) {
+            isMapChanged = true;
             if (flagStart) {
                 var agentName = selBox.elt.value; //agentName
                 curAgent = getAgentByName(agentName);

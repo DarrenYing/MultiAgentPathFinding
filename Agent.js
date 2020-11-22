@@ -7,16 +7,21 @@ class Agent {
 
         this.path = path; //[t, x, y]
         this.agentImg = loadImage('assets/agent.png');
+
+        this.isReached = false;  //标记是否到达，到达后，就不会再参与冲突计算
     }
 
     // 把路径补足到最大时间点
     fullFillPath(maxT) {
         var n = this.path.length;
         var lastItem = this.path[n - 1];
+        // var lastItem =
         for (var i = n; i < maxT; i++) {
             this.path.push(lastItem);
         }
     }
+
+
 
     // 画Agent，执行一步
     stepShow(t) {
