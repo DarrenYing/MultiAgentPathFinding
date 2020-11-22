@@ -1,66 +1,7 @@
-var env;
-var cbs;
-var solution;
-
-var canvas;
-var canvas2Top = 150;
-var left_pos = 10;
-var top_pos = 10;
-
-// 地图相关变量
-var cellw = 30;
-var cellh = 30;
-var gameMap;
-var mapGraph; //将地图存储为图片，节约每次刷新的绘制时间
-var mapEdit; //标记是否能编辑地图
-
-var agentObjs = [];
-var maxT = 0;
-var curT = 0;
-
-var isAlgReady = false;
-var isMapReady = false;
-
-// 接收html变量
-var inputRow;
-var inputCol;
-var wallPercent;
-var mapBtn;
-
-var radioStart;
-var radioEnd;
-var radioBlock;
-
-var flagStart;
-var flagEnd;
-var flagBlock;
-
-var carName;
-var addCarBtn;
-var delCarBtn;
-var selBox;
-var curAgent;
-
-var inputSpeed;
-var speedBtn;
-
-// 控制类变量
-var myFont;
-var status;
-var paused = true;
-var stepsAllowed = 0;
-var components = [];
-var runPauseButton;
-var stepButton;
-var resetButton;
-var agentSpeed = 40;
-
-// 计时相关变量
-var t;
-var timings = {};
-
-//重置后如果没改变地图，就不用重新计算
-var isMapChanged;
+/**
+ * 多Agent路径规划演示demo
+ * @author DarrenYing
+ */
 
 
 function setup() {
@@ -107,7 +48,9 @@ function initCanvas() {
     var canvasWidth = cellw * cols + 100;
     var canvasHeight = cellh * rows + 150;
     canvas = createCanvas(canvasWidth, canvasHeight);
-    canvas.position(screen.availWidth / 2 - canvasWidth / 2, canvas2Top);
+    canvas2Left = screen.availWidth / 2 - canvasWidth / 2;
+    canvas2Top = 150;
+    canvas.position(canvas2Left, canvas2Top);
 
     var dimension = [cols, rows]; //col, row
     if (!agentObjs.length) {
@@ -138,17 +81,20 @@ function initCanvas() {
 
     initSearch();
 
-    removeOrgButton(runPauseButton);
-    runPauseButton = new Button("运行", env.w + 30, 20, 50, 30, runpause);
-    components.push(runPauseButton);
+    runPauseButton = createButton('运行');
+    runPauseButton.position(canvas2Left + env.w + 30, canvas2Top + 20);
+    runPauseButton.class('btn1');
+    runPauseButton.mouseClicked(runpause);
 
-    removeOrgButton(stepButton);
-    stepButton = new Button("单步", env.w + 30, 70, 50, 30, step)
-    components.push(stepButton);
+    stepButton = createButton('单步');
+    stepButton.position(canvas2Left + env.w + 30, canvas2Top + 70);
+    stepButton.class('btn1');
+    stepButton.mouseClicked(step);
 
-    removeOrgButton(resetButton);
-    resetButton = new Button("重置", env.w + 30, 120, 50, 30, restart)
-    components.push(resetButton);
+    resetButton = createButton('重置');
+    resetButton.position(canvas2Left + env.w + 30, canvas2Top + 120);
+    resetButton.class('btn1');
+    resetButton.mouseClicked(restart);
 
     isMapReady = true;
 
@@ -158,10 +104,10 @@ function initCanvas() {
 
 //清空记录
 //mode=0 全部清空 mode=1 只清空execute的记录
-function clearTimings(mode=0) {
-    if(mode==0){
+function clearTimings(mode = 0) {
+    if (mode == 0) {
         timings = {};
-    }else if(mode==1){
+    } else if (mode == 1) {
         var calcTime = timings['Calculate Plan'];
         timings = {};
         timings['Calculate Plan'] = calcTime;
@@ -203,67 +149,75 @@ function logTimings() {
 
 function addAgent() {
 
-
-    var flag = 1;
-    var newAgentName = carName.value();
-    for (var i = 0; i < selBox.elt.options.length; i++) {
-        if (selBox.elt.options[i].value == newAgentName) {
-            flag = 0;
-            break;
+    if (isMapReady) {
+        var flag = 1;
+        var newAgentName = carName.value();
+        if (newAgentName == "") {
+            alert("小车名字不能为空!");
+        } else {
+            for (var i = 0; i < selBox.elt.options.length; i++) {
+                if (selBox.elt.options[i].value == newAgentName) {
+                    flag = 0;
+                    break;
+                }
+            }
+            if (flag) {
+                isMapChanged = true;
+                var option = new Option(newAgentName);
+                option.className = 'agentOption';
+                selBox.elt.options[selBox.elt.options.length] = option;
+                var newAgent = new Agent(pickPos(2), pickPos(3), newAgentName, pickColor());
+                agentObjs.push(newAgent);
+                env.makeAgentDict();
+            } else {
+                alert('名字重复，请换一个吧!');
+                // console.log('名字重复，请换一个吧!');
+            }
         }
-    }
-    if (flag) {
-        isMapChanged = true;
-        var option = new Option(newAgentName);
-        option.className = 'agentOption';
-        selBox.elt.options[selBox.elt.options.length] = option;
-        var newAgent = new Agent(pickPos(2), pickPos(3), newAgentName, pickColor());
-        agentObjs.push(newAgent);
-        env.makeAgentDict();
     } else {
-        console.log('名字重复，请换一个吧!');
+        alert('请先生成地图!');
     }
 }
 
 function removeAgent() {
-    var name = carName.value();
-    var todel = -1;
-    for (var i = selBox.elt.options.length - 1; i >= 0; i--) {
-        if (selBox.elt.options[i].value == name) {
-            todel = i;
-            // selBox.elt.options.remove(i);
-            break;
+    if (isMapReady) {
+        var name = carName.value();
+        var todel = -1;
+        for (var i = selBox.elt.options.length - 1; i >= 0; i--) {
+            if (selBox.elt.options[i].value == name) {
+                todel = i;
+                // selBox.elt.options.remove(i);
+                break;
+            }
         }
-    }
 
-    if (todel != -1) {
-        isMapChanged = true;
-        var todelAgent = agentObjs[todel];
-        //清除其起点和终点
-        env.grid[todelAgent.start[0]][todelAgent.start[1]].type = 0;
-        env.showOneGrid(todelAgent.start[0], todelAgent.start[1]);
-        env.grid[todelAgent.goal[0]][todelAgent.goal[1]].type = 0;
-        env.showOneGrid(todelAgent.goal[0], todelAgent.goal[1]);
-        //从Agent数组中删除
-        _.pull(agentObjs, todelAgent);
-        env.makeAgentDict();
-        //从界面选项中删除
-        selBox.elt.options.remove(i);
+        if (todel != -1) {
+            isMapChanged = true;
+            var todelAgent = agentObjs[todel];
+            //清除其起点和终点
+            env.grid[todelAgent.start[0]][todelAgent.start[1]].type = 0;
+            env.showOneGrid(todelAgent.start[0], todelAgent.start[1]);
+            env.grid[todelAgent.goal[0]][todelAgent.goal[1]].type = 0;
+            env.showOneGrid(todelAgent.goal[0], todelAgent.goal[1]);
+            //从Agent数组中删除
+            _.pull(agentObjs, todelAgent);
+            env.makeAgentDict();
+            //从界面选项中删除
+            selBox.elt.options.remove(i);
+        } else {
+            alert('该小车不存在!');
+            // console.log('该小车不存在!');
+        }
+
+        //清空输入框
+        carName.elt.value = "";
     } else {
-        console.log('该小车不存在!');
+        alert('请先生成地图!');
     }
-
-    //清空输入框
-    carName.elt.value = "";
 
 }
 
 function pickPos(flag) {
-    if (!isMapReady) {
-        console.log('请先生成地图!');
-        return -1;
-    }
-
     var col = floor(random(0, env.dimension[0]));
     var row = floor(random(0, env.dimension[1]));
     while (env.grid[col][row].type == 2 || env.grid[col][row].type == 3) {
@@ -282,10 +236,6 @@ function pickPos(flag) {
 }
 
 function pickColor() {
-    if (!isMapReady) {
-        console.log('请先生成地图!');
-        return -1;
-    }
     var newColor = [floor(random(40, 240)), floor(random(40, 240)), floor(random(40, 240))];
     return newColor;
 }
@@ -308,7 +258,8 @@ function initSearch() {
 
 function pauseCheck(isPause) {
     paused = isPause;
-    runPauseButton.label = paused ? "运行" : "暂停";
+    // runPauseButton.label = paused ? "运行" : "暂停";
+    runPauseButton.elt.innerText = paused ? "运行" : "暂停";
     if (!paused) {
         if (isMapChanged) {
             clearTimings();
@@ -372,13 +323,6 @@ function restart(button) {
     isMapChanged = false;
 }
 
-function removeOrgButton(btn) {
-    if (btn) {
-        let i = components.indexOf(btn);
-        components.splice(i, 1);
-    }
-}
-
 function calcPath() {
     startTime();
     cbs = new CBS(env);
@@ -428,11 +372,7 @@ function checkRadio() {
     }
 }
 
-// function mouseClicked() {
-//     for (var i = 0; i < components.length; i++) {
-//         components[i].mouseClick(mouseX, mouseY);
-//     }
-// }
+
 
 function isBoundSatisfied(x, y) {
     return x < env.dimension[0] && y < env.dimension[1] && x >= 0 && y >= 0;
@@ -447,9 +387,7 @@ function getAgentByName(agentName) {
 }
 
 function mouseClicked() {
-    for (var i = 0; i < components.length; i++) {
-        components[i].mouseClick(mouseX, mouseY);
-    }
+
     if (mapEdit) {
         let x = int((mouseX - left_pos) / cellw);
         let y = int((mouseY - top_pos) / cellh);
@@ -490,7 +428,7 @@ function mouseClicked() {
                     }
                 }
                 if (tmpFlag) {
-                    console.log(env.grid[x][y].type);
+                    // console.log(env.grid[x][y].type);
                     if (env.grid[x][y].type == 1) {
                         env.removeObstacle(x, y);
                     } else {
@@ -498,7 +436,7 @@ function mouseClicked() {
                     }
                     env.grid[x][y].toggleWall();
                     env.showOneGrid(x, y);
-                    console.log(env.grid[x][y].type);
+                    // console.log(env.grid[x][y].type);
                 }
 
             }
@@ -507,14 +445,8 @@ function mouseClicked() {
 }
 
 function drawMap() {
-    // if (mapEdit) {   // 不知道是啥问题，会变绿
     env.showBlock();
     env.showImg();
-    // imageMode(CORNER);
-    // mapGraph = get(left_pos, top_pos, env.w + 1, env.h + 1);
-    // } else {
-    //     image(mapGraph, left_pos, top_pos);
-    // }
 }
 
 function drawButtons() {
@@ -528,10 +460,12 @@ function drawStatus() {
     textFont(myFont);
     //清除原来的状态
     fill(255);
+    noStroke();
     rectMode(CORNER);
     rect(left_pos, env.h + 30, 300, 300);
     //写上新的状态
     stroke(0);
+    strokeWeight(0);
     fill(0);
     text("当前状态:" + status, left_pos, env.h + 50);
 }
@@ -557,7 +491,7 @@ function drawTimings() {
                     break;
                 case "Execution On Map":
                     var tmpSum = round(timings[moment].sum / 1000, 3);
-                    text(moment + ": " + tmpSum.toString() + "s", left_pos + env.w / 2, env.h + 75);
+                    text(moment + ": " + tmpSum.toString() + "s", left_pos + env.w / 2, env.h + 80);
                     break;
                 default:
                     break;
@@ -568,54 +502,12 @@ function drawTimings() {
 }
 
 function draw() {
-    // env.show();
 
     if (isMapReady) {
         drawMap();
-        drawButtons();
         drawStatus();
         drawTimings();
     }
 
     stepSearch();
-
-
-}
-
-function test() {
-    p1 = new Location(1, 2);
-    p2 = new Location(2, 1);
-
-    // console.log(p1.isEqualTo(p2));
-    // console.log(p1.toString());
-
-    s1 = new State(1, p1);
-    s2 = new State(1, p2);
-    // console.log(s1.isEqualTo(s2));
-    // console.log(s1.isEqualExceptTime(s2));
-    // console.log(s1.toString());
-
-    vc1 = new VertexConstraint(1, p1);
-    vc2 = new VertexConstraint(2, p2);
-
-    ec1 = new EdgeConstraint(1, p1, p1);
-    ec2 = new EdgeConstraint(2, p2, p2);
-
-    c1 = new Constraints();
-    c1.vertex_constraints.add(vc1);
-    c1.edge_constraints.add(ec1);
-    c2 = new Constraints();
-    c2.vertex_constraints.add(vc2);
-    c2.edge_constraints.add(ec2);
-
-    // console.log(c1.toString());
-    // console.log(c2.toString());
-    // c1.addConstraint(c2);
-    // console.log(c1.toString());
-
-    test = [];
-    test.push(p1);
-    test.push(p2);
-    p3 = new Location(1, 2);
-    console.log(test.includes(p3));
 }

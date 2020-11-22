@@ -123,33 +123,3 @@ class CTNode {
     }
 
 }
-
-
-class Button {
-    constructor(label, x, y, w, h, callback) {
-        this.label = label;
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
-        this.callback = callback;
-    }
-
-    show() {
-        stroke(0);
-        strokeWeight(1);
-        fill(255);
-        rect(this.x, this.y, this.w, this.h);
-        fill(0);
-        noStroke();
-        text(this.label, this.x + 5, this.y + 5, this.w - 10, this.h - 10);
-    }
-
-    mouseClick(x, y) {
-        if (this.callback != null &&
-            x > this.x && x <= this.x + this.w &&
-            y > this.y && y <= this.y + this.h) {
-            this.callback(this);
-        }
-    }
-}
