@@ -64,5 +64,10 @@ var testButton;
 var t;
 var timings = {};
 
+// 小车相关监测变量
+var monitorTable;
+// var turnCounts = [];
+// var waitCounts = [];
+
 //重置后如果没改变地图，就不用重新计算
 var isMapChanged;

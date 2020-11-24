@@ -96,6 +96,13 @@ function initCanvas() {
     resetButton.class('btn1');
     resetButton.mouseClicked(restart);
 
+    monitorTable = createElement('table');
+    monitorTable.position(canvas2Left + env.w + 30, canvas2Top + 180);
+    monitorTable.class('table');
+    //表头
+    var thead = createElement('thead', '<tr><th>小车名称</th><th>转弯次数</th><th>停车次数</th></tr>');
+    thead.parent(monitorTable);
+
     isMapReady = true;
 
     // calcPath();
@@ -113,6 +120,12 @@ function clearTimings(mode = 0) {
         timings['Calculate Plan'] = calcTime;
     }
 
+}
+
+function clearTable(){
+  for(var i=monitorTable.elt.rows.length-1; i>0; i--){
+    monitorTable.elt.deleteRow(i);
+  }
 }
 
 //开始记录
@@ -301,6 +314,7 @@ function stepSearch() {
                 status = 'all Reached';
                 runpause(true);
                 logTimings();
+                drawMonitorVars();
             }
         }
 
@@ -311,6 +325,7 @@ function restart(button) {
     //重置状态
     // logTimings();
     clearTimings(1);
+    clearTable();
     initSearch();
     pauseCheck(true);
     console.log(curT);
@@ -349,6 +364,8 @@ function calcPath() {
         }
 
         for (var agent of agentObjs) {
+            agent.calcTurnInPath();
+            agent.calcWaitInPath();
             if (agent.path.length < maxT) {
                 agent.fullFillPath(maxT);
             }
@@ -499,6 +516,29 @@ function drawTimings() {
 
         }
     }
+}
+
+// 打印小车的监控状态（转弯次数和停靠次数等）
+function drawMonitorVars() {
+    var tbody = createElement('tbody');
+    tbody.parent(monitorTable);
+
+    for (var agent of agentObjs) {
+        addTableRow(agent, tbody);
+    }
+}
+
+function addTableRow(agent, tbody) {
+    var tr = createElement('tr');
+    var tdName = createElement('td', agent.name);
+    var tdTurn = createElement('td', agent.turnCount.toString());
+    var tdWait = createElement('td', agent.waitCount.toString());
+
+    tdName.parent(tr);
+    tdTurn.parent(tr);
+    tdWait.parent(tr);
+
+    tr.parent(tbody);
 }
 
 function draw() {

@@ -1,5 +1,5 @@
 class Agent {
-    constructor(start, goal, name, color, path=null) {
+    constructor(start, goal, name, color, path = null) {
         this.start = start;
         this.goal = goal;
         this.name = name;
@@ -8,7 +8,11 @@ class Agent {
         this.path = path; //[t, x, y]
         this.agentImg = loadImage('assets/agent.png');
 
-        this.isReached = false;  //标记是否到达，到达后，就不会再参与冲突计算
+        this.isReached = false; //标记是否到达，到达后，就不会再参与冲突计算
+
+        this.turnCount = 0; //转弯次数
+        this.waitCount = 0; //等待次数
+
     }
 
     // 把路径补足到最大时间点
@@ -18,6 +22,26 @@ class Agent {
         // var lastItem =
         for (var i = n; i < maxT; i++) {
             this.path.push(lastItem);
+        }
+    }
+
+    // 计算转弯次数
+    calcTurnInPath() {
+      for (var i = 2; i < this.path.length; i++) {
+          if (abs(this.path[i - 2]['x'] - this.path[i]['x']) == 1 &&
+              abs(this.path[i - 2]['y'] - this.path[i]['y']) == 1) {
+              this.turnCount += 1;
+          }
+      }
+    }
+
+    // 计算等待次数
+    calcWaitInPath() {
+        for (var i = 1; i < this.path.length; i++) {
+            if (abs(this.path[i - 1]['x'] - this.path[i]['x']) == 0 &&
+                abs(this.path[i - 1]['y'] - this.path[i]['y']) == 0) {
+                this.waitCount += 1;
+            }
         }
     }
 
@@ -45,8 +69,8 @@ class Agent {
 
     // 消除上一步的图像
     stepOff(t) {
-        if (t < 1){
-          return;
+        if (t < 1) {
+            return;
         }
         let curx = this.path[t]['x'];
         let cury = this.path[t]['y'];
