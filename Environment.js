@@ -63,7 +63,7 @@ class Environment {
         var maxTime = 0;
         var keys = [];
         for (var key in solution) {
-            if(!getAgentByName(key).isReached){
+            if (!getAgentByName(key).isReached) {
                 keys.push(key);
             }
             let path = solution[key];
@@ -244,6 +244,24 @@ class Environment {
         return solution;
     }
 
+    calcOneSolution(orgSolution, agentToAdjust) {
+        var solution = _.cloneDeep(orgSolution);
+        for (var agent in this.agent_dict) {
+            if (agent == agentToAdjust) {
+                if (this.constraint_dict[agent] == undefined) {
+                    this.constraint_dict[agent] = new Constraints();
+                }
+                this.constraints = this.constraint_dict[agent];
+                var localSolution = this.a_star.search(agent);
+                if (!localSolution) {
+                    return false;
+                }
+                solution[agent] = localSolution;
+            }
+        }
+        return solution;
+    }
+
     calcSolutionCost(solution) {
         var totalCost = 0;
         for (var key in solution) {
@@ -326,7 +344,7 @@ class Environment {
         translate(-left_pos, -top_pos);
     }
 
-    showOneGrid(x, y){
+    showOneGrid(x, y) {
         translate(left_pos, top_pos);
         this.grid[x][y].show();
         translate(-left_pos, -top_pos);

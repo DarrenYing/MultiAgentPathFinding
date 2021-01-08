@@ -39,9 +39,48 @@ function setup() {
 }
 
 function initCanvas() {
-    var rows = inputRow.value();
-    var cols = inputCol.value();
-    var wallRatio = wallPercent.value();
+
+    // Test Mode
+    var testMap = map_20_20_01;
+    var dimension = testMap.dimension;
+    if (!agentObjs.length) {
+        var agents = testMap.agents;
+        for (var agent of agents) {
+            var o = new Agent(agent['start'], agent['goal'], agent['name'], agent['color']);
+            agentObjs.push(o);
+        }
+    }
+
+    var rows = dimension[0];
+    var cols = dimension[1];
+    var wallRatio = testMap.wallRatio;
+
+
+
+    // User Input Mode
+    // var rows = inputRow.value();
+    // var cols = inputCol.value();
+    // var wallRatio = wallPercent.value();
+    // var dimension = [cols, rows]; //col, row
+    // if (!agentObjs.length) {
+    //     var agents = [{
+    //         'start': [0, 0],
+    //         'goal': [7, 2],
+    //         'name': 'agent1',
+    //         'color': [255, 0, 0]
+    //     }, {
+    //         'start': [2, 0],
+    //         'goal': [0, 9],
+    //         'name': 'agent2',
+    //         'color': [0, 255, 0]
+    //     }];
+    //
+    //     for (var agent of agents) {
+    //         var o = new Agent(agent['start'], agent['goal'], agent['name'], agent['color']);
+    //         agentObjs.push(o);
+    //     }
+    // }
+
 
     // var curAgent = selBox.elt.value;
 
@@ -52,25 +91,6 @@ function initCanvas() {
     canvas2Top = 150;
     canvas.position(canvas2Left, canvas2Top);
 
-    var dimension = [cols, rows]; //col, row
-    if (!agentObjs.length) {
-        var agents = [{
-            'start': [0, 0],
-            'goal': [7, 2],
-            'name': 'agent1',
-            'color': [255, 0, 0]
-        }, {
-            'start': [2, 0],
-            'goal': [0, 9],
-            'name': 'agent2',
-            'color': [0, 255, 0]
-        }];
-
-        for (var agent of agents) {
-            var o = new Agent(agent['start'], agent['goal'], agent['name'], agent['color']);
-            agentObjs.push(o);
-        }
-    }
 
     env = new Environment(dimension, agentObjs, wallRatio);
     env.showGrid();
@@ -351,8 +371,8 @@ function calcPath() {
         status = "No Solution!"
         // console.log(status);
         // logTimings();
-        runpause();
-        noLoop();
+        runpause(true);
+        // noLoop();
         return;
     } else {
         // TODO:补全路径，需要修改!

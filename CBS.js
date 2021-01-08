@@ -50,11 +50,13 @@ class CBS {
 
             //根据冲突分裂结点
             for (var agent in constraint_dict) {
+                console.log('###', typeof(agent));
                 var newNode = _.cloneDeep(p);
                 newNode.constraint_dict[agent].addConstraint(constraint_dict[agent]);
 
                 this.env.constraint_dict = newNode.constraint_dict; //切换环境
-                newNode.solution = this.env.calcSolution(); //重新计算路径解
+                // newNode.solution = this.env.calcSolution(); //重新计算路径解
+                newNode.solution = this.env.calcOneSolution(p.solution, agent)
 
                 // console.log("newNode:", newNode);
 

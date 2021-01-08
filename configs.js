@@ -50,7 +50,7 @@ var myFont;
 var status;
 var paused = true;
 var stepsAllowed = 0;
-var agentSpeed = 40;
+var agentSpeed = 15;
 
 // 按钮
 // var components = [];
