@@ -60,6 +60,11 @@ class Cell {
       this.type = 1-this.type;
     }
 
+    setWall(isWall) {
+      this.isWall = isWall;
+      this.type = int(isWall);
+    }
+
 
 
 

@@ -57,7 +57,7 @@ var agentSpeed = 15;
 var runPauseButton;
 var stepButton;
 var resetButton;
-var testButton;
+var saveMapButton;
 
 
 // 计时相关变量

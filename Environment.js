@@ -1,7 +1,7 @@
 // 记得统一函数和变量的命名规范
 
 class Environment {
-    constructor(dimension, agents, wallRatio = 0.1, obstacles = []) {
+    constructor(dimension, agents, wallRatio = -1, obstacles = []) {
         this.dimension = dimension; //[cols, rows]
         this.wallRatio = wallRatio;
         this.obstacles = obstacles;
@@ -273,13 +273,26 @@ class Environment {
 
     // 初始化Cell
     initGrid() {
-        for (var i = 0; i < this.dimension[0]; i++) { //col
-            this.grid[i] = [];
-            for (var j = 0; j < this.dimension[1]; j++) { //row
-                var isWall = random(1.0) < this.wallRatio;
-                this.grid[i][j] = new Cell(i, j, isWall);
-                if (isWall) {
-                    this.obstacles.push([i, j]);
+        if (this.wallRatio == -1) {
+            for (var i = 0; i < this.dimension[0]; i++) { //col
+                this.grid[i] = [];
+                for (var j = 0; j < this.dimension[1]; j++) { //row
+                    this.grid[i][j] = new Cell(i, j);
+                }
+            }
+            for(var i=0; i < this.obstacles.length; i++){
+                this.grid[this.obstacles[i][0]][this.obstacles[i][1]].setWall(true);
+            }
+        }
+        else{
+            for (var i = 0; i < this.dimension[0]; i++) { //col
+                this.grid[i] = [];
+                for (var j = 0; j < this.dimension[1]; j++) { //row
+                    var isWall = random(1.0) < this.wallRatio;
+                    this.grid[i][j] = new Cell(i, j, isWall);
+                    if (isWall) {
+                        this.obstacles.push([i, j]);
+                    }
                 }
             }
         }

@@ -40,46 +40,47 @@ function setup() {
 
 function initCanvas() {
 
-    // Test Mode
-    var testMap = map_20_20_01;
-    var dimension = testMap.dimension;
-    if (!agentObjs.length) {
-        var agents = testMap.agents;
-        for (var agent of agents) {
-            var o = new Agent(agent['start'], agent['goal'], agent['name'], agent['color']);
-            agentObjs.push(o);
-        }
-    }
-
-    var rows = dimension[0];
-    var cols = dimension[1];
-    var wallRatio = testMap.wallRatio;
-
-
-
-    // User Input Mode
-    // var rows = inputRow.value();
-    // var cols = inputCol.value();
-    // var wallRatio = wallPercent.value();
-    // var dimension = [cols, rows]; //col, row
+    // Test Mode, 用于测试自己设计的地图
+    // var testMap = map_test2;
+    // var dimension = testMap.dimension;
     // if (!agentObjs.length) {
-    //     var agents = [{
-    //         'start': [0, 0],
-    //         'goal': [7, 2],
-    //         'name': 'agent1',
-    //         'color': [255, 0, 0]
-    //     }, {
-    //         'start': [2, 0],
-    //         'goal': [0, 9],
-    //         'name': 'agent2',
-    //         'color': [0, 255, 0]
-    //     }];
-    //
+    //     var agents = testMap.agents;
     //     for (var agent of agents) {
     //         var o = new Agent(agent['start'], agent['goal'], agent['name'], agent['color']);
     //         agentObjs.push(o);
     //     }
     // }
+    //
+    // var rows = dimension[0];
+    // var cols = dimension[1];
+    // var obstacles = testMap.obstacles;
+    // var wallRatio = testMap.wallRatio;
+
+
+    // User Input Mode
+    var rows = inputRow.value();
+    var cols = inputCol.value();
+    var wallRatio = wallPercent.value();
+    var obstacles = [];
+    var dimension = [cols, rows]; //col, row
+    if (!agentObjs.length) {
+        var agents = [{
+            'start': [0, 0],
+            'goal': [7, 2],
+            'name': 'agent1',
+            'color': [255, 0, 0]
+        }, {
+            'start': [2, 0],
+            'goal': [0, 9],
+            'name': 'agent2',
+            'color': [0, 255, 0]
+        }];
+
+        for (var agent of agents) {
+            var o = new Agent(agent['start'], agent['goal'], agent['name'], agent['color']);
+            agentObjs.push(o);
+        }
+    }
 
 
     // var curAgent = selBox.elt.value;
@@ -92,7 +93,7 @@ function initCanvas() {
     canvas.position(canvas2Left, canvas2Top);
 
 
-    env = new Environment(dimension, agentObjs, wallRatio);
+    env = new Environment(dimension, agentObjs, wallRatio, obstacles);
     env.showGrid();
 
 
@@ -100,6 +101,7 @@ function initCanvas() {
     paused = true;
 
     initSearch();
+    clearBtns();
 
     runPauseButton = createButton('运行');
     runPauseButton.position(canvas2Left + env.w + 30, canvas2Top + 20);
@@ -115,6 +117,11 @@ function initCanvas() {
     resetButton.position(canvas2Left + env.w + 30, canvas2Top + 120);
     resetButton.class('btn1');
     resetButton.mouseClicked(restart);
+
+    saveMapButton = createButton('保存地图');
+    saveMapButton.position(canvas2Left + env.w + 130, canvas2Top + 20);
+    saveMapButton.class('btn1');
+    saveMapButton.mouseClicked(saveMap);
 
     monitorTable = createElement('table');
     monitorTable.position(canvas2Left + env.w + 30, canvas2Top + 180);
@@ -146,6 +153,42 @@ function clearTable(){
   for(var i=monitorTable.elt.rows.length-1; i>0; i--){
     monitorTable.elt.deleteRow(i);
   }
+}
+
+function clearBtns() {
+    if(runPauseButton == undefined) {
+        return;
+    }
+    var eleList = [runPauseButton, stepButton, resetButton, monitorTable, saveMapButton];
+    for(var element of eleList){
+        let parent = element.elt.parentElement;
+        parent.removeChild(element.elt);
+    }
+}
+
+//保存地囤
+function saveMap() {
+    // var dim = env.dimension;
+    // var obs = env.obstacles;
+    var ags = [];
+    for(var agent of agentObjs) {
+       let tmp = {
+         'start': agent.start,
+         'goal': agent.goal,
+         'name': agent.name,
+         'color': agent.color
+       }
+       ags.push(tmp);
+    }
+    var curMap = {
+      dimension: env.dimension,
+      agents: ags,
+      obstacles: env.obstacles,
+      wallRatio: -1,
+    }
+    console.log(JSON.stringify(curMap));
+    // let mm = new MapToSave(env.dimension, ags, env.obstacles);
+    // console.log(mm.toString());
 }
 
 //开始记录
@@ -268,6 +311,7 @@ function pickPos(flag) {
     return pos;
 }
 
+
 function pickColor() {
     var newColor = [floor(random(40, 240)), floor(random(40, 240)), floor(random(40, 240))];
     return newColor;
@@ -341,6 +385,7 @@ function stepSearch() {
     }
 }
 
+
 function restart(button) {
     //重置状态
     // logTimings();
@@ -360,7 +405,7 @@ function restart(button) {
 
 function calcPath() {
     startTime();
-    cbs = new CBS(env);
+    cbs = new CBS(env);           // 可以添加算法切换按钮，创建不同的CBS即可。
     solution = cbs.search();
     recordTime('Calculate Plan');
 
