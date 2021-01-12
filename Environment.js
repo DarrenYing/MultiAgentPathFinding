@@ -144,8 +144,8 @@ class Environment {
         var constraintDict = {};
         //如果是点冲突
         if (conflict.type == 1) {
-            var vc = new VertexConstraint(conflict.time, conflict.location1);
             var c = new Constraints();
+            var vc = new VertexConstraint(conflict.time, conflict.location1);
             c.vertex_constraints.add(vc);
             constraintDict[conflict.agent1] = c;
             constraintDict[conflict.agent2] = c;
@@ -269,6 +269,16 @@ class Environment {
             totalCost += path.length;
         }
         return totalCost;
+    }
+
+    calcNumOfConflicts(constraint_dict) {
+        var nc = 0;
+        for(let agent in constraint_dict) {
+            let c = constraint_dict[agent];
+            nc += c.vertex_constraints.size;
+            nc += c.edge_constraints.size;
+        }
+        return nc;
     }
 
     // 初始化Cell

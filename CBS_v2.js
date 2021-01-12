@@ -1,4 +1,4 @@
-class CBS {
+class CBS_v2 {
     constructor(env) {
         this.env = env;
         this.openSet = [];
@@ -54,14 +54,15 @@ class CBS {
 
                 this.env.constraint_dict = newNode.constraint_dict; //切换环境
                 // newNode.solution = this.env.calcSolution(); //重新计算路径解
-                newNode.solution = this.env.calcOneSolution(p.solution, agent)
+                newNode.solution = this.env.calcOneSolution(p.solution, agent);
 
-                console.log("newNode:", newNode);
+                // console.log("newNode:", newNode);
 
                 if (!newNode.solution) {
                     continue;
                 }
                 newNode.cost = this.env.calcSolutionCost(newNode.solution);
+                newNode.nc = this.env.calcNumOfConflicts(newNode.constraint_dict);
 
                 console.log("newNode:", newNode);
                 console.log("cost:", newNode.cost);
@@ -107,6 +108,12 @@ class CBS {
             if (node.cost < minCost) {
                 minNode = node;
                 minCost = node.cost;
+            }
+            else if (node.cost == minCost) {
+                if (node.nc < minNode.nc) {
+                    minNode = node;
+                    minCost = node.cost;
+                }
             }
         }
         return minNode;

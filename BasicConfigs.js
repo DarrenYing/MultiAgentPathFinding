@@ -113,6 +113,8 @@ class CTNode {
         this.solution = {};
         this.constraint_dict = {};
         this.cost = 0;
+
+        this.nc = 0;  // number of conflicts in solution
     }
 
     isEqualTo(other) {

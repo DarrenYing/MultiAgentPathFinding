@@ -405,7 +405,9 @@ function restart(button) {
 
 function calcPath() {
     startTime();
-    cbs = new CBS(env);           // 可以添加算法切换按钮，创建不同的CBS即可。
+    // 可以添加算法切换按钮，创建不同的CBS即可
+    // cbs = new CBS(env);
+    cbs = new CBS_v2(env);
     solution = cbs.search();
     recordTime('Calculate Plan');
 
