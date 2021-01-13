@@ -69,9 +69,6 @@ class Agent {
 
     // 消除上一步的图像
     stepOff(t) {
-        if (t < 1) {
-            return;
-        }
         let curx = this.path[t]['x'];
         let cury = this.path[t]['y'];
 
@@ -85,6 +82,5 @@ class Agent {
 
         translate(-left_pos, -top_pos);
     }
-
 
 }

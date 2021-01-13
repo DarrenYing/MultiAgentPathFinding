@@ -41,46 +41,47 @@ function setup() {
 function initCanvas() {
 
     // Test Mode, 用于测试自己设计的地图
-    // var testMap = map_test2;
-    // var dimension = testMap.dimension;
-    // if (!agentObjs.length) {
-    //     var agents = testMap.agents;
-    //     for (var agent of agents) {
-    //         var o = new Agent(agent['start'], agent['goal'], agent['name'], agent['color']);
-    //         agentObjs.push(o);
-    //     }
-    // }
-    //
-    // var rows = dimension[0];
-    // var cols = dimension[1];
-    // var obstacles = testMap.obstacles;
-    // var wallRatio = testMap.wallRatio;
-
-
-    // User Input Mode
-    var rows = inputRow.value();
-    var cols = inputCol.value();
-    var wallRatio = wallPercent.value();
-    var obstacles = [];
-    var dimension = [cols, rows]; //col, row
+    // var testMap = map_8by8_12_6_ex2;
+    var testMap = map_test2;
+    var dimension = testMap.dimension;
     if (!agentObjs.length) {
-        var agents = [{
-            'start': [0, 0],
-            'goal': [7, 2],
-            'name': 'agent1',
-            'color': [255, 0, 0]
-        }, {
-            'start': [2, 0],
-            'goal': [0, 9],
-            'name': 'agent2',
-            'color': [0, 255, 0]
-        }];
-
+        var agents = testMap.agents;
         for (var agent of agents) {
             var o = new Agent(agent['start'], agent['goal'], agent['name'], agent['color']);
             agentObjs.push(o);
         }
     }
+
+    var rows = dimension[0];
+    var cols = dimension[1];
+    var obstacles = testMap.obstacles;
+    var wallRatio = testMap.wallRatio;
+
+
+    // User Input Mode
+    // var rows = inputRow.value();
+    // var cols = inputCol.value();
+    // var wallRatio = wallPercent.value();
+    // var obstacles = [];
+    // var dimension = [cols, rows]; //col, row
+    // if (!agentObjs.length) {
+    //     var agents = [{
+    //         'start': [0, 0],
+    //         'goal': [7, 2],
+    //         'name': 'agent1',
+    //         'color': [255, 0, 0]
+    //     }, {
+    //         'start': [2, 0],
+    //         'goal': [0, 9],
+    //         'name': 'agent2',
+    //         'color': [0, 255, 0]
+    //     }];
+    //
+    //     for (var agent of agents) {
+    //         var o = new Agent(agent['start'], agent['goal'], agent['name'], agent['color']);
+    //         agentObjs.push(o);
+    //     }
+    // }
 
 
     // var curAgent = selBox.elt.value;
@@ -364,7 +365,9 @@ function stepSearch() {
         if (frameCount % agentSpeed == 0) {
             stepsAllowed--;
             for (var agent of agentObjs) {
-                agent.stepOff(curT - 1);
+                if(curT>0) {
+                    agent.stepOff(curT - 1);
+                }
             }
             for (var agent of agentObjs) {
                 agent.stepShow(curT);
@@ -393,7 +396,7 @@ function restart(button) {
     clearTable();
     initSearch();
     pauseCheck(true);
-    console.log(curT);
+    console.log('curT:' + str(curT));
     for (var agent of agentObjs) {
         agent.stepOff(curT - 1);
         agent.stepOff(curT);
@@ -546,7 +549,7 @@ function drawStatus() {
     fill(255);
     noStroke();
     rectMode(CORNER);
-    rect(left_pos, env.h + 30, 300, 300);
+    rect(left_pos, env.h + 30, 300, 50);
     //写上新的状态
     stroke(0);
     strokeWeight(0);
@@ -561,7 +564,8 @@ function drawTimings() {
     fill(255);
     stroke(255);
     rectMode(CORNER);
-    rect(left_pos + env.w / 2, env.h + 30, 300, 300);
+    // var delta = env.w/2>320 ? env.w/2 : 350;
+    rect(left_pos, env.h + 80, 300, 80);
     stroke(0);
     fill(0);
     for (var moment in timings) {
@@ -571,11 +575,11 @@ function drawTimings() {
                 //     text(moment + ": " + (round(timings[moment].sum, 3)).toString() + "ms", left_pos + env.w / 2, env.h + 50);
                 //     break;
                 case "Calculate Plan":
-                    text(moment + ": " + (round(timings[moment].sum, 3)).toString() + "ms", left_pos + env.w / 2, env.h + 50);
+                    text(moment + ": " + (round(timings[moment].sum, 3)).toString() + "ms", left_pos, env.h + 80);
                     break;
                 case "Execution On Map":
                     var tmpSum = round(timings[moment].sum / 1000, 3);
-                    text(moment + ": " + tmpSum.toString() + "s", left_pos + env.w / 2, env.h + 80);
+                    text(moment + ": " + tmpSum.toString() + "s", left_pos, env.h + 110);
                     break;
                 default:
                     break;
