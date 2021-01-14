@@ -14,6 +14,7 @@ var cellh = 30;
 var gameMap;
 var mapGraph; //将地图存储为图片，节约每次刷新的绘制时间
 var mapEdit; //标记是否能编辑地图
+var mode = "userMode";   // 地图生成模式
 
 var agentObjs = [];
 var maxT = 0;
@@ -26,6 +27,10 @@ var isMapReady = false;
 var inputRow;
 var inputCol;
 var wallPercent;
+var mapName;
+var mapMode;
+var userModeInput;
+var testModeInput;
 var mapBtn;
 
 var radioStart;

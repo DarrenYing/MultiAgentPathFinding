@@ -41,8 +41,12 @@
   margin-right: 10px;
 }
 
-#row {
-  display: inline-block;
+#userModeInput {
+    display: inline-block;
+}
+
+#testModeInput {
+    display: none;
 }
 
 #gmap {
@@ -226,6 +230,20 @@
   position: absolute;
   left: 2%;
   top: 35%;
+}
+
+.mode {
+    display: inline-block;
+}
+
+#mapMode {
+  width: 100px;
+  height: 29px;
+  background: #f1f2f6;
+}
+
+#mapName {
+    width: 200px;
 }
 
 /* 监控表格样式 */

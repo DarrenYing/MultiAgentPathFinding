@@ -50,9 +50,22 @@
 	</div>
 	<div class="settings">
 		<div class="inputBox">
-			<label class="label">行数: </label><input type="text" class="input" id="row" class="userInput" value="20">
-			<label class="label">列数: </label><input type="text" class="input" id="col" class="userInput" value="20">
-			<label class="label">障碍物比例: </label><input type="text" class="input" id="blockPercent" class="userInput" value="0.1">
+			<div class="mode">
+				<label class="label">地图模式: </label>
+				<select class="select" id="mapMode">
+					<option value="userMode" class="agentOption">用户模式</option>
+					<option value="testMode" class="agentOption">测试模式</option>
+
+				</select>
+			</div>
+			<div id="userModeInput">
+				<label class="label">行数: </label><input type="text" class="input" id="row" class="userInput" value="20">
+				<label class="label">列数: </label><input type="text" class="input" id="col" class="userInput" value="20">
+				<label class="label">障碍物比例: </label><input type="text" class="input" id="blockPercent" class="userInput" value="0.1">
+			</div>
+			<div id="testModeInput">
+				<label class="label">地图名称: </label><input type="text" class="input" id="mapName" class="userInput" value="map_8by8_12_6_ex2">
+			</div>
 			<button type="button" class="btn1" id="gmap">生成地图</button>
 		</div>
 		<div class="speedBox">

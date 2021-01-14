@@ -14,9 +14,15 @@ function setup() {
     delCarBtn = select('#delCar');
     selBox = select('#sel');
 
+    mapMode = select('#mapMode');
+    mapMode.mouseClicked(switchMapMode);
+    userModeInput = select('#userModeInput');
+    testModeInput = select('#testModeInput');
     inputRow = select('#row');
     inputCol = select('#col');
     wallPercent = select('#blockPercent');
+    mapName = select('#mapName');
+
 
     radioStart = select('#start');
     radioEnd = select('#end');
@@ -38,50 +44,65 @@ function setup() {
     // recordTime('Set Up');
 }
 
+function switchMapMode() {
+    mode = mapMode.elt.options[mapMode.elt.selectedIndex].value;    //userMode or testMode
+    if(mode == "testMode") {
+        userModeInput.elt.style.display = 'none';
+        testModeInput.elt.style.display = 'inline-block';
+    }
+    else if (mode == "userMode") {
+        userModeInput.elt.style.display = 'inline-block';
+        testModeInput.elt.style.display = 'none';
+    }
+    // clearTimings();
+}
+
 function initCanvas() {
 
-    // Test Mode, 用于测试自己设计的地图
-    // var testMap = map_8by8_12_6_ex2;
-    var testMap = map_test2;
-    var dimension = testMap.dimension;
-    if (!agentObjs.length) {
+    if(mode == "testMode") {
+
+        // Test Mode, 用于测试自己设计的地图
+        // var testMap = map_8by8_12_6_ex2;
+        var testMap = eval(mapName.elt.value);
+        var dimension = testMap.dimension;
         var agents = testMap.agents;
+        agentObjs.splice(0, agentObjs.length);
+        for (var agent of agents) {
+            var o = new Agent(agent['start'], agent['goal'], agent['name'], agent['color']);
+            agentObjs.push(o);
+        }
+
+
+        var rows = dimension[0];
+        var cols = dimension[1];
+        var obstacles = testMap.obstacles;
+        var wallRatio = testMap.wallRatio;
+    }
+    else if(mode == "userMode") {
+        // User Input Mode
+        var rows = inputRow.value();
+        var cols = inputCol.value();
+        var wallRatio = wallPercent.value();
+        var obstacles = [];
+        var dimension = [cols, rows]; //col, row
+        var agents = [{
+            'start': [0, 0],
+            'goal': [7, 2],
+            'name': 'agent1',
+            'color': [255, 0, 0]
+        }, {
+            'start': [2, 0],
+            'goal': [0, 9],
+            'name': 'agent2',
+            'color': [0, 255, 0]
+        }];
+
+        agentObjs.splice(0, agentObjs.length);
         for (var agent of agents) {
             var o = new Agent(agent['start'], agent['goal'], agent['name'], agent['color']);
             agentObjs.push(o);
         }
     }
-
-    var rows = dimension[0];
-    var cols = dimension[1];
-    var obstacles = testMap.obstacles;
-    var wallRatio = testMap.wallRatio;
-
-
-    // User Input Mode
-    // var rows = inputRow.value();
-    // var cols = inputCol.value();
-    // var wallRatio = wallPercent.value();
-    // var obstacles = [];
-    // var dimension = [cols, rows]; //col, row
-    // if (!agentObjs.length) {
-    //     var agents = [{
-    //         'start': [0, 0],
-    //         'goal': [7, 2],
-    //         'name': 'agent1',
-    //         'color': [255, 0, 0]
-    //     }, {
-    //         'start': [2, 0],
-    //         'goal': [0, 9],
-    //         'name': 'agent2',
-    //         'color': [0, 255, 0]
-    //     }];
-    //
-    //     for (var agent of agents) {
-    //         var o = new Agent(agent['start'], agent['goal'], agent['name'], agent['color']);
-    //         agentObjs.push(o);
-    //     }
-    // }
 
 
     // var curAgent = selBox.elt.value;
