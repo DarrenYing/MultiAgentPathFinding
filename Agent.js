@@ -6,6 +6,7 @@ class Agent {
         this.color = color;
 
         this.path = path; //[t, x, y]
+        this.pathLength = 0;    //每个小车补全路径之前的路径长度
         this.agentImg = loadImage('assets/agent.png');
 
         this.isReached = false; //标记是否到达，到达后，就不会再参与冲突计算

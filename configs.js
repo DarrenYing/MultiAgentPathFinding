@@ -15,6 +15,7 @@ var gameMap;
 var mapGraph; //将地图存储为图片，节约每次刷新的绘制时间
 var mapEdit; //标记是否能编辑地图
 var mode = "userMode";   // 地图生成模式
+var autoTest = false;   // 是否开启自动测试
 
 var agentObjs = [];
 var maxT = 0;
@@ -29,6 +30,7 @@ var inputCol;
 var wallPercent;
 var mapName;
 var mapMode;
+var autoTestBtn;    // 自动测试checkbox
 var userModeInput;
 var testModeInput;
 var mapBtn;
@@ -68,6 +70,22 @@ var saveMapButton;
 // 计时相关变量
 var t;
 var timings = {};
+var timeStats = []; //记录统计每个地图小车运行的时间数据
+
+// var ts = [
+//     {
+//         mapName: "",
+//         timings: [
+//             agentname1: time,
+//             agentname2: time,
+//         ],
+//         avgTime: time,
+//     },
+//     {
+//
+//     }
+// ]
+
 
 // 小车相关监测变量
 var monitorTable;

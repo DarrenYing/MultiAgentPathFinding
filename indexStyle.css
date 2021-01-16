@@ -49,8 +49,12 @@
     display: none;
 }
 
+#autotest {
+    font-size: 18px;
+}
+
 #gmap {
-  margin-left: 50px;
+  margin-left: 30px;
 }
 
 .btnBox {
@@ -243,7 +247,7 @@
 }
 
 #mapName {
-    width: 200px;
+    width: 220px;
 }
 
 /* 监控表格样式 */
@@ -276,4 +280,51 @@
 
 .table tr:hover {
   cursor: pointer;
+}
+
+/* 复选框 */
+input[type="checkbox"] {
+  display: none;
+}
+input[type="checkbox"] + label {
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+  position: relative;
+  transition: 0.3s;
+  margin: -5px 2px;
+  box-sizing: border-box;
+}
+input[type="checkbox"] + label:after,
+input[type="checkbox"] + label:before {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 20px;
+  height: 20px;
+  transition: 0.3s;
+  cursor: pointer;
+}
+#autotest:checked + label.green {
+  background: #AEDCAE;
+}
+#autotest:checked + label.green:after {
+  background: #5CB85C;
+}
+#autotest:checked + label:after {
+  left: calc(100% - 18px);
+}
+#autotest + label {
+  background: #ddd;
+  border-radius: 20px;
+}
+#autotest + label:after {
+  background: #fff;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  top: 2px;
+  left: 2px;
 }

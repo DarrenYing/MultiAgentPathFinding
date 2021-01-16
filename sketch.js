@@ -22,6 +22,8 @@ function setup() {
     inputCol = select('#col');
     wallPercent = select('#blockPercent');
     mapName = select('#mapName');
+    autoTestBtn = select('#autotest');
+    autoTestBtn.mouseClicked(switchAutoTest);
 
 
     radioStart = select('#start');
@@ -55,6 +57,10 @@ function switchMapMode() {
         testModeInput.elt.style.display = 'none';
     }
     // clearTimings();
+}
+
+function switchAutoTest() {
+    autoTest = autoTestBtn.elt.checked;
 }
 
 function initCanvas() {
@@ -108,7 +114,7 @@ function initCanvas() {
     // var curAgent = selBox.elt.value;
 
     var canvasWidth = cellw * cols + 100;
-    var canvasHeight = cellh * rows + 150;
+    var canvasHeight = cellh * rows + 200;
     canvas = createCanvas(canvasWidth, canvasHeight);
     canvas2Left = screen.availWidth / 2 - canvasWidth / 2;
     canvas2Top = 150;
@@ -233,16 +239,49 @@ function recordTime(moment) {
 
 //打印时间
 function logTimings() {
+    var tmpStats = {};
+    tmpStats["MapName"] = mapName.elt.value;
+    tmpStats["Execution-Timings"] =  [];
     for (var moment in timings) {
         if (timings.hasOwnProperty(moment)) {
-            if (timings[moment].sum > 1000) {
-                var tmpSum = round(timings[moment].sum / 1000, 3);
-                console.log(moment + ": " + tmpSum.toString() + "s"); //应该是每个agent一个时间
-            } else {
-                console.log(moment + ": " + (round(timings[moment].sum, 3)).toString() + "ms");
+
+            switch (moment) {
+                case "Calculate Plan":
+                    tmpStats["Calculation-Timings"] = round(timings[moment].sum, 3);
+                    break;
+                case "Execution On Map":
+                    var tmpSum = round(timings[moment].sum, 3); // 单位 ms
+
+                    var tmpTotal = 0;
+                    for(var agent of agentObjs) {
+                        var tmpRunTime = round(tmpSum / maxT * agent.pathLength, 3);
+                        tmpTotal += tmpRunTime;
+                        let aname = agent.name;
+                        tmpStats["Execution-Timings"].push({aname: tmpRunTime});
+                        // console.log(moment + "-" + agent.name + ": " + tmpRunTime.toString() + "ms"); //应该是每个agent一个时间
+                    }
+                    tmpStats["Average-Time"] = round(tmpTotal / agentObjs.length, 3);
+                    break;
             }
+            // if (timings[moment].sum > 1000) {
+            //     var tmpSum = round(timings[moment].sum / 1000, 3);  //单位 s
+            //     for(var agent of agentObjs) {
+            //         var tmpRunTime = round(tmpSum / maxT * agent.pathLength, 3);
+            //         console.log(moment + "-" + agent.name + ": " + tmpRunTime.toString() + "s"); //应该是每个agent一个时间
+            //     }
+            //     // console.log(moment + ": " + tmpSum.toString() + "s"); //应该是每个agent一个时间
+            // } else {
+            //     var tmpSum = round(timings[moment].sum, 3); // 单位 ms
+            //     for(var agent of agentObjs) {
+            //         var tmpRunTime = round(tmpSum / maxT * agent.pathLength, 3);
+            //         console.log(moment + "-" + agent.name + ": " + tmpRunTime.toString() + "ms"); //应该是每个agent一个时间
+            //     }
+            //     // console.log(moment + ": " + (round(timings[moment].sum, 3)).toString() + "ms");
+            // }
         }
     }
+    timeStats.push(tmpStats);
+    console.log("timeStats: ", timeStats);
 }
 
 function addAgent() {
@@ -407,6 +446,16 @@ function stepSearch() {
         }
 
     }
+    else if (paused && status=='all Reached' && autoTest) {
+        let tmpName = mapName.elt.value;
+        let idx = eval(tmpName.slice(16, tmpName.length));
+        if(idx<3){
+            restart();
+            mapName.elt.value = tmpName.slice(0, 16) + str(idx+1);
+            initCanvas();
+            runpause();
+        }
+    }
 }
 
 
@@ -430,8 +479,8 @@ function restart(button) {
 function calcPath() {
     startTime();
     // 可以添加算法切换按钮，创建不同的CBS即可
-    // cbs = new CBS(env);
-    cbs = new CBS_v2(env);
+    cbs = new CBS(env);
+    // cbs = new CBS_v2(env);
     solution = cbs.search();
     recordTime('Calculate Plan');
 
@@ -449,6 +498,7 @@ function calcPath() {
         // TODO:补全路径，需要修改!
         for (var agent of agentObjs) {
             agent.path = solution[agent.name];
+            agent.pathLength = agent.path.length;
             if (agent.path.length > maxT) {
                 maxT = agent.path.length;
             }
@@ -586,7 +636,7 @@ function drawTimings() {
     stroke(255);
     rectMode(CORNER);
     // var delta = env.w/2>320 ? env.w/2 : 350;
-    rect(left_pos, env.h + 80, 300, 80);
+    rect(left_pos, env.h + 80, 300, 120);
     stroke(0);
     fill(0);
     for (var moment in timings) {
@@ -599,8 +649,23 @@ function drawTimings() {
                     text(moment + ": " + (round(timings[moment].sum, 3)).toString() + "ms", left_pos, env.h + 80);
                     break;
                 case "Execution On Map":
-                    var tmpSum = round(timings[moment].sum / 1000, 3);
-                    text(moment + ": " + tmpSum.toString() + "s", left_pos, env.h + 110);
+                    if (timings[moment].sum > 1000) {
+                        var tmpSum = round(timings[moment].sum / 1000, 3);  //单位 s
+                        text(moment + ": " + tmpSum.toString() + "s", left_pos, env.h + 110);
+                        // agentObjs.forEach((agent, idx) => {
+                        //     tmpRunTime = round(tmpSum / maxT * agent.pathLength, 3);
+                        //     text(moment + "-" + agent.name + ": " + tmpRunTime.toString() + "s", left_pos, env.h + 110 + idx*30);
+                        // });
+
+                    } else {
+                        var tmpSum = round(timings[moment].sum, 3);  //单位 ms
+                        text(moment + ": " + tmpSum.toString() + "ms", left_pos, env.h + 110);
+                        // agentObjs.forEach((agent, idx) => {
+                        //     tmpRunTime = round(tmpSum / maxT * agent.pathLength, 3);
+                        //     text(moment + "-" + agent.name + ": " + tmpRunTime.toString() + "s", left_pos, env.h + 110 + idx*30);
+                        // });
+                    }
+                    // text(moment + ": " + tmpSum.toString() + "s", left_pos, env.h + 110);
                     break;
                 default:
                     break;
