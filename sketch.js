@@ -55,6 +55,7 @@ function switchMapMode() {
     else if (mode == "userMode") {
         userModeInput.elt.style.display = 'inline-block';
         testModeInput.elt.style.display = 'none';
+        autoTest = false;   //关闭自动测试
     }
     // clearTimings();
 }
@@ -215,6 +216,7 @@ function saveMap() {
       wallRatio: -1,
     }
     console.log(JSON.stringify(curMap));
+    saveToFile(curMap, 'map.json');
     // let mm = new MapToSave(env.dimension, ags, env.obstacles);
     // console.log(mm.toString());
 }
@@ -241,6 +243,8 @@ function recordTime(moment) {
 function logTimings() {
     var tmpStats = {};
     tmpStats["MapName"] = mapName.elt.value;
+    tmpStats["TurnCounts"] = [];
+    tmpStats["WaitCounts"] = [];
     tmpStats["Execution-Timings"] =  [];
     for (var moment in timings) {
         if (timings.hasOwnProperty(moment)) {
@@ -257,8 +261,17 @@ function logTimings() {
                         var tmpRunTime = round(tmpSum / maxT * agent.pathLength, 3);
                         tmpTotal += tmpRunTime;
                         let aname = agent.name;
-                        tmpStats["Execution-Timings"].push({aname: tmpRunTime});
+                        let tmpObj = {};
+                        tmpObj[aname] = tmpRunTime;
+                        tmpStats["Execution-Timings"].push(tmpObj);
                         // console.log(moment + "-" + agent.name + ": " + tmpRunTime.toString() + "ms"); //应该是每个agent一个时间
+
+                        let tmp1 = {};
+                        tmp1[aname] = agent.turnCount;
+                        tmpStats["TurnCounts"].push(tmp1);
+                        let tmp2 = {};
+                        tmp2[aname] = agent.waitCount;
+                        tmpStats["WaitCounts"].push(tmp2);
                     }
                     tmpStats["Average-Time"] = round(tmpTotal / agentObjs.length, 3);
                     break;
@@ -447,14 +460,28 @@ function stepSearch() {
 
     }
     else if (paused && status=='all Reached' && autoTest) {
-        let tmpName = mapName.elt.value;
-        let idx = eval(tmpName.slice(16, tmpName.length));
-        if(idx<3){
-            restart();
-            mapName.elt.value = tmpName.slice(0, 16) + str(idx+1);
-            initCanvas();
-            runpause();
+        let tmpName = mapName.elt.value;    //map_8by8_12_1_ex1   map_32by32_204_10_ex0
+        let xpos = tmpName.search('x') + 1; //16
+        let idx = eval(tmpName.slice(xpos, tmpName.length));
+        if(idx < idxLimit) { //控制实验序号 0-99
+            mapName.elt.value = tmpName.slice(0, xpos) + str(idx+1);
         }
+        else if(agentObjs.length < agentNumLimit) {   //控制Agent数量
+            //运行完保存数据
+            saveToFile(timeStats, tmpName.slice(0, xpos)+'.json');
+            timeStats.length = 0;   //清空数组
+
+            //开始下一组测试
+            let agentPos = tmpName.search('e')-1;   //pos of agent num
+            let newAgentNum = eval(tmpName.slice(12, agentPos)) + 1;
+            if(newAgentNum >= agentNumLimit) {
+                noLoop();
+            }
+            mapName.elt.value = tmpName.slice(0, 12) + str(newAgentNum) + '_ex0';
+        }
+        restart();
+        initCanvas();
+        runpause();
     }
 }
 
@@ -484,8 +511,8 @@ function calcPath() {
     solution = cbs.search();
     recordTime('Calculate Plan');
 
-    console.log(solution);
-    console.log('done out!');
+    // console.log(solution);
+    // console.log('done out!');
 
     if (!Object.keys(solution).length || solution == -1) {
         status = "No Solution!"

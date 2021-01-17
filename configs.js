@@ -71,20 +71,8 @@ var saveMapButton;
 var t;
 var timings = {};
 var timeStats = []; //记录统计每个地图小车运行的时间数据
-
-// var ts = [
-//     {
-//         mapName: "",
-//         timings: [
-//             agentname1: time,
-//             agentname2: time,
-//         ],
-//         avgTime: time,
-//     },
-//     {
-//
-//     }
-// ]
+var idxLimit = 23;
+var agentNumLimit = 8;
 
 
 // 小车相关监测变量
