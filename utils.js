@@ -1,22 +1,4 @@
-function fake_click(obj) {
-    var ev = document.createEvent("MouseEvents");
-    ev.initMouseEvent(
-        "click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null
-    );
-    obj.dispatchEvent(ev);
-}
-
-function download(data, name) {
-    var urlObject = window.URL || window.webkitURL || window;
-
-    var downloadData = new Blob([data]);
-
-    var save_link = document.createElementNS("http://www.w3.org/1999/xhtml", "a")
-    save_link.href = urlObject.createObjectURL(downloadData);
-    save_link.download = name;
-    fake_click(save_link);
-}
-
+//保存数据到本地文件中
 function saveToFile(data, filename) {
     let MIME_TYPE = "text/json";
     if (!data) return;
@@ -38,5 +20,3 @@ function saveToFile(data, filename) {
     // 触发事件
     a.dispatchEvent(e);
 }
-//调用方法
-// download("data", "save.txt");

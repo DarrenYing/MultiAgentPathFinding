@@ -94,12 +94,12 @@ function initCanvas() {
         var dimension = [cols, rows]; //col, row
         var agents = [{
             'start': [0, 0],
-            'goal': [7, 2],
+            'goal': [2, 2],
             'name': 'agent1',
             'color': [255, 0, 0]
         }, {
             'start': [2, 0],
-            'goal': [0, 9],
+            'goal': [0, 2],
             'name': 'agent2',
             'color': [0, 255, 0]
         }];
@@ -472,12 +472,12 @@ function stepSearch() {
             timeStats.length = 0;   //清空数组
 
             //开始下一组测试
-            let agentPos = tmpName.search('e')-1;   //pos of agent num
-            let newAgentNum = eval(tmpName.slice(12, agentPos)) + 1;
+            let orgAgentNum = tmpName.split('_')[3];
+            let newAgentNum = eval(orgAgentNum) + 1;
             if(newAgentNum >= agentNumLimit) {
                 noLoop();
             }
-            mapName.elt.value = tmpName.slice(0, 12) + str(newAgentNum) + '_ex0';
+            mapName.elt.value = tmpName.slice(0, tmpName.search('_'+orgAgentNum+'_')+1) + str(newAgentNum) + '_ex0';
         }
         restart();
         initCanvas();
@@ -506,8 +506,8 @@ function restart(button) {
 function calcPath() {
     startTime();
     // 可以添加算法切换按钮，创建不同的CBS即可
-    cbs = new CBS(env);
-    // cbs = new CBS_v2(env);
+    // cbs = new CBS(env);
+    cbs = new CBS_v2(env);
     solution = cbs.search();
     recordTime('Calculate Plan');
 
