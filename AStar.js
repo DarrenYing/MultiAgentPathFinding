@@ -13,6 +13,22 @@ class AStar {
         return path;
     }
 
+    calcTurn(parents, cur) {
+        if(parents[cur] == undefined || parents[parents[cur]] == undefined) {
+            return 0;
+        }
+
+        let curx = cur.location.x;
+        let cury = cur.location.y;
+        let ppx = parents[parents[cur]].location.x;
+        let ppy = parents[parents[cur]].location.y;
+        if(abs(curx - ppx) == 1 && abs(cury - ppy) == 1){
+            return 1;
+        }
+        return 0;
+
+    }
+
     search(agentName) {
 
         var initialState = this.env.agent_dict[agentName]["start"];
@@ -27,7 +43,7 @@ class AStar {
         gScore[initialState] = 0;
 
         var fScore = {};
-        fScore[initialState] = this.env.heuristic(initialState, agentName);
+        fScore[initialState] = this.env.calcH(initialState, agentName);
 
         // 由于无路可走时，Agent可以选择一直停在原地，所以设定一个最大迭代轮数
         var cnt = 0;
@@ -45,7 +61,7 @@ class AStar {
                 }
             }
             var current = openList[cur];
-            // console.log("current:", current==openList[cur]);
+            // console.log("current:", current, fScore[current]);
 
             if (this.env.isReachTarget(current, agentName)) {
                 return this.reconstructPath(parents, current);
@@ -71,7 +87,7 @@ class AStar {
                     continue;
                 }
 
-                var tmpG = gScore[current] + stepCost;
+                var tmpG = gScore[current] + this.env.calcG(current, neighbor);
 
                 if (!this.isInArray(openList, neighbor)) {
                     openList.push(neighbor);
@@ -80,9 +96,11 @@ class AStar {
                 }
 
                 //更新g、f和parent
-                gScore[neighbor] = tmpG;
-                fScore[neighbor] = tmpG + this.env.heuristic(neighbor, agentName);
                 parents[neighbor] = current;
+                gScore[neighbor] = tmpG;
+                let hScore = this.env.calcH(neighbor, agentName);
+                let turnCost = this.calcTurn(parents, neighbor);
+                fScore[neighbor] = tmpG + hScore + turnCost;
             }
 
             // console.log(openList);

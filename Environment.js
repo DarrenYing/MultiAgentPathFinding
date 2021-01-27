@@ -179,7 +179,12 @@ class Environment {
         }
     }
 
-    heuristic(state, agentName) {
+    calcG(current, neighbor) {
+        return 1;
+        // return abs(current.location.x - neighbor.location.x) + abs(current.location.y - neighbor.location.y)
+    }
+
+    calcH(state, agentName) {
         var goal = this.agent_dict[agentName]["goal"];
         return abs(state.location.x - goal.location.x) + abs(state.location.y - goal.location.y);
     }

@@ -6,7 +6,7 @@ class Agent {
         this.color = color;
 
         this.path = path; //[t, x, y]
-        this.pathLength = 0;    //每个小车补全路径之前的路径长度
+        this.pathLength = 0; //每个小车补全路径之前的路径长度
         this.agentImg = loadImage('assets/agent.png');
 
         this.isReached = false; //标记是否到达，到达后，就不会再参与冲突计算
@@ -28,16 +28,18 @@ class Agent {
 
     // 计算转弯次数
     calcTurnInPath() {
-      for (var i = 2; i < this.path.length; i++) {
-          if (abs(this.path[i - 2]['x'] - this.path[i]['x']) == 1 &&
-              abs(this.path[i - 2]['y'] - this.path[i]['y']) == 1) {
-              this.turnCount += 1;
-          }
-      }
+        this.turnCount = 0;
+        for (var i = 2; i < this.path.length; i++) {
+            if (abs(this.path[i - 2]['x'] - this.path[i]['x']) == 1 &&
+                abs(this.path[i - 2]['y'] - this.path[i]['y']) == 1) {
+                this.turnCount += 1;
+            }
+        }
     }
 
     // 计算等待次数
     calcWaitInPath() {
+        this.waitCount = 0;
         for (var i = 1; i < this.path.length; i++) {
             if (abs(this.path[i - 1]['x'] - this.path[i]['x']) == 0 &&
                 abs(this.path[i - 1]['y'] - this.path[i]['y']) == 0) {

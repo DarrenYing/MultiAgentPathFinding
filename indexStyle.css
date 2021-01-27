@@ -23,11 +23,11 @@
 }
 
 #addCar {
-  margin-right: 10px;
+  margin: 0 10px;
 }
 
 #delCar {
-  margin-right: 30px;
+  margin-right: 10px;
 }
 
 .inputBox {

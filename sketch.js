@@ -47,15 +47,14 @@ function setup() {
 }
 
 function switchMapMode() {
-    mode = mapMode.elt.options[mapMode.elt.selectedIndex].value;    //userMode or testMode
-    if(mode == "testMode") {
+    mode = mapMode.elt.options[mapMode.elt.selectedIndex].value; //userMode or testMode
+    if (mode == "testMode") {
         userModeInput.elt.style.display = 'none';
         testModeInput.elt.style.display = 'inline-block';
-    }
-    else if (mode == "userMode") {
+    } else if (mode == "userMode") {
         userModeInput.elt.style.display = 'inline-block';
         testModeInput.elt.style.display = 'none';
-        autoTest = false;   //关闭自动测试
+        autoTest = false; //关闭自动测试
     }
     // clearTimings();
 }
@@ -66,7 +65,7 @@ function switchAutoTest() {
 
 function initCanvas() {
 
-    if(mode == "testMode") {
+    if (mode == "testMode") {
 
         // Test Mode, 用于测试自己设计的地图
         // var testMap = map_8by8_12_6_ex2;
@@ -84,8 +83,7 @@ function initCanvas() {
         var cols = dimension[1];
         var obstacles = testMap.obstacles;
         var wallRatio = testMap.wallRatio;
-    }
-    else if(mode == "userMode") {
+    } else if (mode == "userMode") {
         // User Input Mode
         var rows = inputRow.value();
         var cols = inputCol.value();
@@ -94,12 +92,12 @@ function initCanvas() {
         var dimension = [cols, rows]; //col, row
         var agents = [{
             'start': [0, 0],
-            'goal': [2, 2],
+            'goal': [4, 4],
             'name': 'agent1',
             'color': [255, 0, 0]
         }, {
-            'start': [2, 0],
-            'goal': [0, 2],
+            'start': [1, 0],
+            'goal': [4, 5],
             'name': 'agent2',
             'color': [0, 255, 0]
         }];
@@ -178,18 +176,18 @@ function clearTimings(mode = 0) {
 
 }
 
-function clearTable(){
-  for(var i=monitorTable.elt.rows.length-1; i>0; i--){
-    monitorTable.elt.deleteRow(i);
-  }
+function clearTable() {
+    for (var i = monitorTable.elt.rows.length - 1; i > 0; i--) {
+        monitorTable.elt.deleteRow(i);
+    }
 }
 
 function clearBtns() {
-    if(runPauseButton == undefined) {
+    if (runPauseButton == undefined) {
         return;
     }
     var eleList = [runPauseButton, stepButton, resetButton, monitorTable, saveMapButton];
-    for(var element of eleList){
+    for (var element of eleList) {
         let parent = element.elt.parentElement;
         parent.removeChild(element.elt);
     }
@@ -200,23 +198,25 @@ function saveMap() {
     // var dim = env.dimension;
     // var obs = env.obstacles;
     var ags = [];
-    for(var agent of agentObjs) {
-       let tmp = {
-         'start': agent.start,
-         'goal': agent.goal,
-         'name': agent.name,
-         'color': agent.color
-       }
-       ags.push(tmp);
+    for (var agent of agentObjs) {
+        let tmp = {
+            'start': agent.start,
+            'goal': agent.goal,
+            'name': agent.name,
+            'color': agent.color
+        }
+        ags.push(tmp);
     }
     var curMap = {
-      dimension: env.dimension,
-      agents: ags,
-      obstacles: env.obstacles,
-      wallRatio: -1,
+        dimension: env.dimension,
+        agents: ags,
+        obstacles: env.obstacles,
+        wallRatio: -1,
     }
     console.log(JSON.stringify(curMap));
-    saveToFile(curMap, 'map.json');
+    var curMapFilename = 'map_' + str(env.dimension[1]) + 'by' + str(env.dimension[0]) +
+        '_' + str(env.obstacles.length) + '_' + str(ags.length) + '_' + 'ex';
+    saveToFile(curMap, curMapFilename);
     // let mm = new MapToSave(env.dimension, ags, env.obstacles);
     // console.log(mm.toString());
 }
@@ -245,7 +245,7 @@ function logTimings() {
     tmpStats["MapName"] = mapName.elt.value;
     tmpStats["TurnCounts"] = [];
     tmpStats["WaitCounts"] = [];
-    tmpStats["Execution-Timings"] =  [];
+    tmpStats["Execution-Timings"] = [];
     for (var moment in timings) {
         if (timings.hasOwnProperty(moment)) {
 
@@ -257,7 +257,7 @@ function logTimings() {
                     var tmpSum = round(timings[moment].sum, 3); // 单位 ms
 
                     var tmpTotal = 0;
-                    for(var agent of agentObjs) {
+                    for (var agent of agentObjs) {
                         var tmpRunTime = round(tmpSum / maxT * agent.pathLength, 3);
                         tmpTotal += tmpRunTime;
                         let aname = agent.name;
@@ -421,24 +421,32 @@ function pauseCheck(isPause) {
     }
 }
 
-function runpause(button) {
+function runpause() {
     mapEdit = false;
     pauseCheck(!paused);
 }
 
-function step(button) {
-    mapEdit = false;
-    pauseCheck(true); //暂停
-    stepsAllowed = 1;
+function step() {
+    if (solution == undefined || !Object.keys(solution).length || solution == -1) {
+        alert('请先运行');
+    }
+    else if (status=="All Reached") {
+        alert('已到达终点');
+    }
+    else {
+        mapEdit = false;
+        pauseCheck(true); //暂停
+        stepsAllowed = 1;
+    }
 }
 
 function stepSearch() {
     if (!paused || stepsAllowed > 0) {
-
+        // console.log(paused, stepsAllowed);
         if (frameCount % agentSpeed == 0) {
             stepsAllowed--;
             for (var agent of agentObjs) {
-                if(curT>0) {
+                if (curT > 0) {
                     agent.stepOff(curT - 1);
                 }
             }
@@ -448,36 +456,35 @@ function stepSearch() {
 
             if (curT < maxT - 1) {
                 curT += 1;
-                status = 'still Searching';
+                status = 'Still Searching';
             } else {
                 recordTime('Execution On Map');
-                status = 'all Reached';
-                runpause(true);
+                status = 'All Reached';
+                mapEdit = false;
+                pauseCheck(true);
                 logTimings();
                 drawMonitorVars();
             }
         }
 
-    }
-    else if (paused && status=='all Reached' && autoTest) {
-        let tmpName = mapName.elt.value;    //map_8by8_12_1_ex1   map_32by32_204_10_ex0
+    } else if (paused && status == 'All Reached' && autoTest) {
+        let tmpName = mapName.elt.value; //map_8by8_12_1_ex1   map_32by32_204_10_ex0
         let xpos = tmpName.search('x') + 1; //16
         let idx = eval(tmpName.slice(xpos, tmpName.length));
-        if(idx < idxLimit) { //控制实验序号 0-99
-            mapName.elt.value = tmpName.slice(0, xpos) + str(idx+1);
-        }
-        else if(agentObjs.length < agentNumLimit) {   //控制Agent数量
+        if (idx < idxLimit) { //控制实验序号 0-99
+            mapName.elt.value = tmpName.slice(0, xpos) + str(idx + 1);
+        } else if (agentObjs.length < agentNumLimit) { //控制Agent数量
             //运行完保存数据
-            saveToFile(timeStats, tmpName.slice(0, xpos)+'.json');
-            timeStats.length = 0;   //清空数组
+            saveToFile(timeStats, tmpName.slice(0, xpos) + '.json');
+            timeStats.length = 0; //清空数组
 
             //开始下一组测试
             let orgAgentNum = tmpName.split('_')[3];
             let newAgentNum = eval(orgAgentNum) + 1;
-            if(newAgentNum >= agentNumLimit) {
+            if (newAgentNum >= agentNumLimit) {
                 noLoop();
             }
-            mapName.elt.value = tmpName.slice(0, tmpName.search('_'+orgAgentNum+'_')+1) + str(newAgentNum) + '_ex0';
+            mapName.elt.value = tmpName.slice(0, tmpName.search('_' + orgAgentNum + '_') + 1) + str(newAgentNum) + '_ex0';
         }
         restart();
         initCanvas();
@@ -486,7 +493,7 @@ function stepSearch() {
 }
 
 
-function restart(button) {
+function restart() {
     //重置状态
     // logTimings();
     clearTimings(1);
@@ -518,7 +525,7 @@ function calcPath() {
         status = "No Solution!"
         // console.log(status);
         // logTimings();
-        runpause(true);
+        runpause();
         // noLoop();
         return;
     } else {
@@ -532,6 +539,7 @@ function calcPath() {
         }
 
         for (var agent of agentObjs) {
+            console.log(agent);
             agent.calcTurnInPath();
             agent.calcWaitInPath();
             if (agent.path.length < maxT) {
@@ -677,7 +685,7 @@ function drawTimings() {
                     break;
                 case "Execution On Map":
                     if (timings[moment].sum > 1000) {
-                        var tmpSum = round(timings[moment].sum / 1000, 3);  //单位 s
+                        var tmpSum = round(timings[moment].sum / 1000, 3); //单位 s
                         text(moment + ": " + tmpSum.toString() + "s", left_pos, env.h + 110);
                         // agentObjs.forEach((agent, idx) => {
                         //     tmpRunTime = round(tmpSum / maxT * agent.pathLength, 3);
@@ -685,7 +693,7 @@ function drawTimings() {
                         // });
 
                     } else {
-                        var tmpSum = round(timings[moment].sum, 3);  //单位 ms
+                        var tmpSum = round(timings[moment].sum, 3); //单位 ms
                         text(moment + ": " + tmpSum.toString() + "ms", left_pos, env.h + 110);
                         // agentObjs.forEach((agent, idx) => {
                         //     tmpRunTime = round(tmpSum / maxT * agent.pathLength, 3);
