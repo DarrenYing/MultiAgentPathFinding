@@ -90,17 +90,20 @@ function initCanvas() {
         var wallRatio = wallPercent.value();
         var obstacles = [];
         var dimension = [cols, rows]; //col, row
-        var agents = [{
-            'start': [0, 0],
-            'goal': [4, 4],
-            'name': 'agent1',
-            'color': [255, 0, 0]
-        }, {
-            'start': [1, 0],
-            'goal': [4, 5],
-            'name': 'agent2',
-            'color': [0, 255, 0]
-        }];
+        var agents = [
+            {
+                'start': [0, 0],
+                'goal': [4, 4],
+                'name': 'agent1',
+                'color': [255, 0, 0]
+            },
+            {
+                'start': [1, 0],
+                'goal': [4, 5],
+                'name': 'agent2',
+                'color': [0, 255, 0]
+            }
+        ];
 
         agentObjs.splice(0, agentObjs.length);
         for (var agent of agents) {
@@ -429,11 +432,9 @@ function runpause() {
 function step() {
     if (solution == undefined || !Object.keys(solution).length || solution == -1) {
         alert('请先运行');
-    }
-    else if (status=="All Reached") {
+    } else if (status == "All Reached") {
         alert('已到达终点');
-    }
-    else {
+    } else {
         mapEdit = false;
         pauseCheck(true); //暂停
         stepsAllowed = 1;

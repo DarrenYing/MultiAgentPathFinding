@@ -14,7 +14,7 @@ class AStar {
     }
 
     calcTurn(parents, cur) {
-        if(parents[cur] == undefined || parents[parents[cur]] == undefined) {
+        if (parents[cur] == undefined || parents[parents[cur]] == undefined) {
             return 0;
         }
 
@@ -22,7 +22,7 @@ class AStar {
         let cury = cur.location.y;
         let ppx = parents[parents[cur]].location.x;
         let ppy = parents[parents[cur]].location.y;
-        if(abs(curx - ppx) == 1 && abs(cury - ppy) == 1){
+        if (abs(curx - ppx) == 1 && abs(cury - ppy) == 1) {
             return 1;
         }
         return 0;
@@ -42,12 +42,15 @@ class AStar {
         var gScore = {};
         gScore[initialState] = 0;
 
+        var hScore = {};
+        hScore[initialState] = this.env.calcH(initialState, agentName);
+
         var fScore = {};
-        fScore[initialState] = this.env.calcH(initialState, agentName);
+        fScore[initialState] = hScore[initialState];
 
         // 由于无路可走时，Agent可以选择一直停在原地，所以设定一个最大迭代轮数
         var cnt = 0;
-        var maxCnt = 800;
+        var maxCnt = 500;
 
         while (openList.length) {
             cnt++;
@@ -58,10 +61,15 @@ class AStar {
             for (var i = 1; i < openList.length; i++) {
                 if (fScore[openList[i]] < fScore[openList[cur]]) {
                     cur = i;
+                } else if (fScore[openList[i]] = fScore[openList[cur]]) { // f值相等时，优选选择h值小的
+                    if (hScore[openList[i]] < hScore[openList[cur]]) {
+                        cur = i;
+                    }
                 }
             }
             var current = openList[cur];
-            // console.log("current:", current, fScore[current]);
+            console.log("current:", current, fScore[current]);
+            // console.log(fScore);
 
             if (this.env.isReachTarget(current, agentName)) {
                 return this.reconstructPath(parents, current);
@@ -98,9 +106,9 @@ class AStar {
                 //更新g、f和parent
                 parents[neighbor] = current;
                 gScore[neighbor] = tmpG;
-                let hScore = this.env.calcH(neighbor, agentName);
+                hScore[neighbor] = this.env.calcH(neighbor, agentName);
                 let turnCost = this.calcTurn(parents, neighbor);
-                fScore[neighbor] = tmpG + hScore + turnCost;
+                fScore[neighbor] = tmpG + hScore[neighbor] + turnCost;
             }
 
             // console.log(openList);

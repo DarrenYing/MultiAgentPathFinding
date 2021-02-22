@@ -31,29 +31,14 @@ class Environment {
             neighbors.push(newState);
         }
         //可以进一步解耦，对newLoc检查边界，newState检查约束
-        // Up
-        var newLoc = new Location(state.location.x, state.location.y - 1);
-        newState = new State(state.time + 1, newLoc);
-        if (this.isStateValid(newState) && this.isEcSatisfied(state, newState)) {
-            neighbors.push(newState);
-        }
-        // Down
-        var newLoc = new Location(state.location.x, state.location.y + 1);
-        newState = new State(state.time + 1, newLoc);
-        if (this.isStateValid(newState) && this.isEcSatisfied(state, newState)) {
-            neighbors.push(newState);
-        }
-        // Left
-        var newLoc = new Location(state.location.x - 1, state.location.y);
-        newState = new State(state.time + 1, newLoc);
-        if (this.isStateValid(newState) && this.isEcSatisfied(state, newState)) {
-            neighbors.push(newState);
-        }
-        // Right
-        var newLoc = new Location(state.location.x + 1, state.location.y);
-        newState = new State(state.time + 1, newLoc);
-        if (this.isStateValid(newState) && this.isEcSatisfied(state, newState)) {
-            neighbors.push(newState);
+        for(let i=0; i < 4; i++) {
+            let newx = state.location.x + dirs1[i][0];
+            let newy = state.location.y + dirs1[i][1];
+            var newLoc = new Location(newx, newy);
+            var newState = new State(state.time + 1, newLoc);
+            if (this.isStateValid(newState) && this.isEcSatisfied(state, newState)) {
+                neighbors.push(newState);
+            }
         }
 
         return neighbors;
