@@ -2,6 +2,9 @@
 // document.write('<script src="maps/test01.js" charset="utf-8"></script>');
 // document.write('<script src="maps/test02.js" charset="utf-8"></script>');
 
+//调试时测试地图
+var map_test3 = {"dimension":["20","20"],
+"agents":[{"start":[8,8],"goal":[17,8],"name":"agent1","color":[231,76,60]},{"start":[1,17],"goal":[14,14],"name":"agent2","color":[46,204,113]},{"start":[10,2],"goal":[7,15],"name":"agent3","color":[241,196,15]},{"start":[9,13],"goal":[19,4],"name":"agent4","color":[52,152,219]},{"start":[19,14],"goal":[17,19],"name":"agent5","color":[155,89,182]}],"obstacles":[[0,3],[0,6],[1,5],[1,11],[2,8],[4,5],[4,16],[5,3],[6,0],[7,9],[9,7],[9,10],[9,12],[10,8],[10,18],[11,7],[11,8],[13,0],[13,8],[13,9],[13,16],[15,5],[16,4],[16,16],[16,17],[17,2],[18,11],[18,17],[18,18],[19,7],[19,11],[19,12],[19,17]],"wallRatio":-1};
 
 /*
  * 测试地图20*20系列

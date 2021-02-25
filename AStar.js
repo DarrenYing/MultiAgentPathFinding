@@ -50,7 +50,7 @@ class AStar {
 
         // 由于无路可走时，Agent可以选择一直停在原地，所以设定一个最大迭代轮数
         var cnt = 0;
-        var maxCnt = 500;
+        var maxCnt = 800;
 
         while (openList.length) {
             cnt++;
@@ -61,14 +61,15 @@ class AStar {
             for (var i = 1; i < openList.length; i++) {
                 if (fScore[openList[i]] < fScore[openList[cur]]) {
                     cur = i;
-                } else if (fScore[openList[i]] = fScore[openList[cur]]) { // f值相等时，优选选择h值小的
-                    if (hScore[openList[i]] < hScore[openList[cur]]) {
-                        cur = i;
-                    }
                 }
+                // else if (fScore[openList[i]] = fScore[openList[cur]]) { // f值相等时，优选选择h值小的，对于wait的情况会有问题，需要更仔细考虑
+                //     if (hScore[openList[i]] < hScore[openList[cur]]) {
+                //         cur = i;
+                //     }
+                // }
             }
             var current = openList[cur];
-            console.log("current:", current, fScore[current]);
+            // console.log("current:", current, fScore[current]);
             // console.log(fScore);
 
             if (this.env.isReachTarget(current, agentName)) {

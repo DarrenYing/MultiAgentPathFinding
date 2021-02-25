@@ -21,6 +21,7 @@ function setup() {
     inputRow = select('#row');
     inputCol = select('#col');
     wallPercent = select('#blockPercent');
+    inputAgentNum = select('#agentNum');
     mapName = select('#mapName');
     autoTestBtn = select('#autotest');
     autoTestBtn.mouseClicked(switchAutoTest);
@@ -73,42 +74,53 @@ function initCanvas() {
         var dimension = testMap.dimension;
         var agents = testMap.agents;
         agentObjs.splice(0, agentObjs.length);
+        selBox.elt.options.length = 0;  //先清空
         for (var agent of agents) {
             var o = new Agent(agent['start'], agent['goal'], agent['name'], agent['color']);
             agentObjs.push(o);
+            //添加到选项框
+            var option = new Option(agent['name']);
+            option.className = 'agentOption';
+            selBox.elt.options[selBox.elt.options.length] = option;
         }
-
-
         var rows = dimension[0];
         var cols = dimension[1];
         var obstacles = testMap.obstacles;
         var wallRatio = testMap.wallRatio;
+
     } else if (mode == "userMode") {
         // User Input Mode
         var rows = inputRow.value();
         var cols = inputCol.value();
         var wallRatio = wallPercent.value();
+        var agentNum = inputAgentNum.value();
         var obstacles = [];
         var dimension = [cols, rows]; //col, row
-        var agents = [
-            {
-                'start': [0, 0],
-                'goal': [4, 4],
-                'name': 'agent1',
-                'color': [255, 0, 0]
-            },
-            {
-                'start': [1, 0],
-                'goal': [4, 5],
-                'name': 'agent2',
-                'color': [0, 255, 0]
-            }
-        ];
+        // var agents = [
+        //     {
+        //         'start': [0, 0],
+        //         'goal': [4, 4],
+        //         'name': 'agent1',
+        //         'color': [255, 0, 0]
+        //     },
+        //     {
+        //         'start': [1, 0],
+        //         'goal': [4, 5],
+        //         'name': 'agent2',
+        //         'color': [0, 255, 0]
+        //     }
+        // ];
+        var agents = generateAgents(agentNum, rows, cols);
 
         agentObjs.splice(0, agentObjs.length);
+        selBox.elt.options.length = 0;  //先清空
         for (var agent of agents) {
             var o = new Agent(agent['start'], agent['goal'], agent['name'], agent['color']);
             agentObjs.push(o);
+            //添加到选项框
+            var option = new Option(agent['name']);
+            option.className = 'agentOption';
+            selBox.elt.options[selBox.elt.options.length] = option;
         }
     }
 
@@ -300,8 +312,30 @@ function logTimings() {
     console.log("timeStats: ", timeStats);
 }
 
-function addAgent() {
+//初始化时生成对应数量的Agent
+function generateAgents(num, rows, cols) {
+    var newAgents = [];
+    for(var i=0; i<num; i++) {
+        //创建Agent
+        let agentName = 'agent'+str(i+1);
+        let newAgent = {};
+        newAgent['start'] = generateRandomPos(rows, cols);
+        newAgent['goal'] = generateRandomPos(rows, cols);   //需要检查是否重复
+        newAgent['name'] = agentName;
+        newAgent['color'] = colors[i%8];
+        newAgents.push(newAgent);
+    }
+    return newAgents;
+}
 
+//生成随机位置
+function generateRandomPos(rows, cols) {
+    let pos1 = floor(random(0, cols));
+    let pos2 = floor(random(0, rows));
+    return [pos1, pos2];
+}
+
+function addAgent() {
     if (isMapReady) {
         var flag = 1;
         var newAgentName = carName.value();
