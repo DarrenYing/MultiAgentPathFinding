@@ -13,7 +13,10 @@ class CBS_v2 {
         for (var agent in this.env.agent_dict) {
             start.constraint_dict[agent] = new Constraints();
         }
+        let t1 = millis(); //精确到毫秒
         start.solution = this.env.calcSolution(); //计算初始路径解
+        let t2 = millis();
+        console.log(t2-t1);
         if (!start.solution) {
             return {};
         }
@@ -30,6 +33,7 @@ class CBS_v2 {
             this.env.constraint_dict = p.constraint_dict; //变换环境
             var conflict = this.env.getFirstConflict(p.solution);
 
+            console.log("loop");
             // console.log("conflict:", conflict);
             // console.log("open1:", this.openSet);
             // console.log("close1:", this.closedSet);

@@ -14,17 +14,17 @@ class AStar {
     }
 
     calcTurn(parents, cur) {
-        if (parents[cur] == undefined || parents[parents[cur]] == undefined) {
-            return 0;
-        }
-
-        let curx = cur.location.x;
-        let cury = cur.location.y;
-        let ppx = parents[parents[cur]].location.x;
-        let ppy = parents[parents[cur]].location.y;
-        if (abs(curx - ppx) == 1 && abs(cury - ppy) == 1) {
-            return 1;
-        }
+        // if (parents[cur] == undefined || parents[parents[cur]] == undefined) {
+        //     return 0;
+        // }
+        //
+        // let curx = cur.location.x;
+        // let cury = cur.location.y;
+        // let ppx = parents[parents[cur]].location.x;
+        // let ppy = parents[parents[cur]].location.y;
+        // if (abs(curx - ppx) == 1 && abs(cury - ppy) == 1) {
+        //     return 1;
+        // }
         return 0;
 
     }
@@ -50,7 +50,7 @@ class AStar {
 
         // 由于无路可走时，Agent可以选择一直停在原地，所以设定一个最大迭代轮数
         var cnt = 0;
-        var maxCnt = 400;
+        var maxCnt = 5000;
 
         while (openList.length) {
             cnt++;
@@ -62,17 +62,18 @@ class AStar {
                 if (fScore[openList[i]] < fScore[openList[cur]]) {
                     cur = i;
                 }
-                // else if (fScore[openList[i]] = fScore[openList[cur]]) { // f值相等时，优选选择h值小的，对于wait的情况会有问题，需要更仔细考虑
-                //     if (hScore[openList[i]] < hScore[openList[cur]]) {
-                //         cur = i;
-                //     }
-                // }
+                else if (fScore[openList[i]] == fScore[openList[cur]]) { // f值相等时，优选选择g值大的，因为g大代表探索了更长的路径
+                    if (gScore[openList[i]] > gScore[openList[cur]]) {
+                        cur = i;
+                    }
+                }
             }
             var current = openList[cur];
             // console.log("current:", current, fScore[current]);
             // console.log(fScore);
 
             if (this.env.isReachTarget(current, agentName)) {
+                // console.log(cnt);
                 return this.reconstructPath(parents, current);
             }
 
