@@ -672,6 +672,36 @@ function mouseClicked() {
     }
 }
 
+function mouseDragged() {
+    if (mapEdit) {
+        let x = int((mouseX - left_pos) / cellw);
+        let y = int((mouseY - top_pos) / cellh);
+        checkRadio();
+        if (isBoundSatisfied(x, y)) {
+            isMapChanged = true;
+            if (flagBlock) {
+                var tmpFlag = true;
+                for (var agent of agentObjs) {
+                    if ((x == agent.start[0] && y == agent.start[1]) ||
+                        (x == agent.goal[0] && y == agent.goal[1])) {
+                        tmpFlag = false;
+                    }
+                }
+                if (tmpFlag) {
+                    // console.log(env.grid[x][y].type);
+                    if (env.grid[x][y].type == 0) {
+                        env.grid[x][y].setWall(true);
+                        env.obstacles.push([x, y]);
+                    }
+                    env.showOneGrid(x, y);
+                    // console.log(env.grid[x][y].type);
+                }
+
+            }
+        }
+    }
+}
+
 function drawMap() {
     env.showBlock();
     env.showImg();

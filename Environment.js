@@ -174,6 +174,11 @@ class Environment {
         return abs(state.location.x - goal.location.x) + abs(state.location.y - goal.location.y);
     }
 
+    calcVisualDist(state, agentName) {
+        var goal = this.agent_dict[agentName]["goal"];
+        return dist(state.location.x, state.location.y, goal.location.x, goal.location.y);
+    }
+
     isReachTarget(state, agentName) {
         var targetState = this.agent_dict[agentName]["goal"];
         return state.isEqualExceptTime(targetState);

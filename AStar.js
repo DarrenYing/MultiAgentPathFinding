@@ -48,9 +48,12 @@ class AStar {
         var fScore = {};
         fScore[initialState] = hScore[initialState];
 
+        var visualDist = {};
+        visualDist[initialState] = this.env.calcVisualDist(initialState, agentName);
+
         // 由于无路可走时，Agent可以选择一直停在原地，所以设定一个最大迭代轮数
         var cnt = 0;
-        var maxCnt = 5000;
+        var maxCnt = 600;
 
         while (openList.length) {
             cnt++;
@@ -61,9 +64,12 @@ class AStar {
             for (var i = 1; i < openList.length; i++) {
                 if (fScore[openList[i]] < fScore[openList[cur]]) {
                     cur = i;
-                }
-                else if (fScore[openList[i]] == fScore[openList[cur]]) { // f值相等时，优选选择g值大的，因为g大代表探索了更长的路径
+                } else if (fScore[openList[i]] == fScore[openList[cur]]) { // f值相等时，优选选择g值大的，因为g大代表探索了更长的路径
                     if (gScore[openList[i]] > gScore[openList[cur]]) {
+                        cur = i;
+                    }
+                    else if (gScore[openList[i]] == gScore[openList[cur]] &&
+                        visualDist[openList[i]] > visualDist[openList[cur]]) {  // f值和g值都相等时，选择视距大的，减少转弯的选择
                         cur = i;
                     }
                 }
@@ -111,6 +117,7 @@ class AStar {
                 hScore[neighbor] = this.env.calcH(neighbor, agentName);
                 let turnCost = this.calcTurn(parents, neighbor);
                 fScore[neighbor] = tmpG + hScore[neighbor] + turnCost;
+                visualDist[neighbor] = this.env.calcVisualDist(neighbor, agentName);
             }
 
             // console.log(openList);
