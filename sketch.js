@@ -165,6 +165,11 @@ function initCanvas() {
     saveMapButton.class('btn1');
     saveMapButton.mouseClicked(saveMap);
 
+    saveDataButton = createButton('保存数据');
+    saveDataButton.position(canvas2Left + env.w + 130, canvas2Top + 70);
+    saveDataButton.class('btn1');
+    saveDataButton.mouseClicked(saveData);
+
     monitorTable = createElement('table');
     monitorTable.position(canvas2Left + env.w + 30, canvas2Top + 180);
     monitorTable.class('table');
@@ -234,6 +239,24 @@ function saveMap() {
     saveToFile(curMap, curMapFilename);
     // let mm = new MapToSave(env.dimension, ags, env.obstacles);
     // console.log(mm.toString());
+}
+
+function saveData() {
+    if (timeStats.length == 0) {
+        alert("当前无统计数据");
+        return 0;
+    }
+    if (mode == 'testMode') {
+        let tmpName = mapName.elt.value; //map_8by8_12_1_ex1   map_32by32_204_10_ex0
+        let xpos = tmpName.search('x') + 1; //16
+        var curMapFilename = tmpName.slice(0, xpos) + '_ex_statistics';
+    }
+    else if (mode == 'userMode') {
+        var curMapFilename = 'map_' + str(env.dimension[1]) + 'by' + str(env.dimension[0]) +
+            '_' + str(env.obstacles.length) + '_' + str(agentObjs.length) + '_ex_statistics';
+    }
+    saveToFile(timeStats, curMapFilename + '.json');
+    timeStats.length = 0;   // 下载后清空统计数据
 }
 
 //开始记录

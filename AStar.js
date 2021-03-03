@@ -53,7 +53,7 @@ class AStar {
 
         // 由于无路可走时，Agent可以选择一直停在原地，所以设定一个最大迭代轮数
         var cnt = 0;
-        var maxCnt = 600;
+        var maxCnt = 1000;
 
         while (openList.length) {
             cnt++;

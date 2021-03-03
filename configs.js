@@ -66,6 +66,7 @@ var runPauseButton;
 var stepButton;
 var resetButton;
 var saveMapButton;
+var saveDataButton;
 
 
 // 计时相关变量
