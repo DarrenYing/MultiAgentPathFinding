@@ -14,7 +14,7 @@ class CBS_v2 {
             start.constraint_dict[agent] = new Constraints();
         }
         let t1 = millis(); //精确到毫秒
-        start.solution = this.env.calcSolution(); //计算初始路径解
+        start.solution = this.env.calcSolution(true); //计算初始路径解
         let t2 = millis();
         console.log(t2-t1);
         if (!start.solution) {

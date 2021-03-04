@@ -21,6 +21,8 @@ class Environment {
         this.constraint_dict = {}; // agent:Constraints
 
         this.a_star = new AStar(this); //算法
+        this.a_star_v2 = new AStar_v2(this); //改进算法
+        this.alg = this.a_star;
     }
 
     getNeighbors(state) {
@@ -223,14 +225,19 @@ class Environment {
     }
 
     //不需要每个agent都重新计算，只计算constraint变化的即可
-    calcSolution() {
+    calcSolution(use_v2) {
+        if (use_v2 == true) {
+            this.alg = this.a_star_v2;
+        } else {
+            this.alg = this.a_star;
+        }
         var solution = {};
         for (var agent in this.agent_dict) {
             if (this.constraint_dict[agent] == undefined) {
                 this.constraint_dict[agent] = new Constraints();
             }
             this.constraints = this.constraint_dict[agent];
-            var localSolution = this.a_star.search(agent);
+            var localSolution = this.alg.search(agent);
             if (!localSolution) {
                 return false;
             }
@@ -247,7 +254,7 @@ class Environment {
                     this.constraint_dict[agent] = new Constraints();
                 }
                 this.constraints = this.constraint_dict[agent];
-                var localSolution = this.a_star.search(agent);
+                var localSolution = this.alg.search(agent);
                 if (!localSolution) {
                     return false;
                 }

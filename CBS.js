@@ -13,7 +13,7 @@ class CBS {
         for (var agent in this.env.agent_dict) {
             start.constraint_dict[agent] = new Constraints();
         }
-        start.solution = this.env.calcSolution(); //计算初始路径解
+        start.solution = this.env.calcSolution(false); //计算初始路径解
         if (!start.solution) {
             return {};
         }

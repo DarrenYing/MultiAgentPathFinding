@@ -8,12 +8,18 @@ function setup() {
 
     // startTime();
 
-    //用户输入
+    //用户输入、
+    //小车
     carName = select('#agentName');
     addCarBtn = select('#addCar');
     delCarBtn = select('#delCar');
     selBox = select('#sel');
 
+    //算法
+    algBox = select('#alg');
+    algBox.mouseClicked(switchAlg);
+
+    //地图
     mapMode = select('#mapMode');
     mapMode.mouseClicked(switchMapMode);
     userModeInput = select('#userModeInput');
@@ -45,6 +51,19 @@ function setup() {
     myFont = loadFont('assets/YaHei.Consolas.1.12.ttf'); //微软雅黑+Consolas混合
 
     // recordTime('Set Up');
+}
+
+function switchAlg() {
+    algName = algBox.elt.options[algBox.elt.selectedIndex].value;   //alg1 or alg2
+    if (algName == "alg1") {
+        cbs = new CBS(env);
+        console.log(env.alg);
+    }
+    else if (algName == "alg2") {
+        cbs = new CBS_v2(env);
+        console.log(env.alg);
+    }
+    isMapChanged = true;    //触发算法重新计算
 }
 
 function switchMapMode() {
@@ -80,7 +99,7 @@ function initCanvas() {
             agentObjs.push(o);
             //添加到选项框
             var option = new Option(agent['name']);
-            option.className = 'agentOption';
+            option.className = 'selectOption';
             selBox.elt.options[selBox.elt.options.length] = option;
         }
         var rows = dimension[0];
@@ -119,7 +138,7 @@ function initCanvas() {
             agentObjs.push(o);
             //添加到选项框
             var option = new Option(agent['name']);
-            option.className = 'agentOption';
+            option.className = 'selectOption';
             selBox.elt.options[selBox.elt.options.length] = option;
         }
     }
@@ -138,6 +157,7 @@ function initCanvas() {
     env = new Environment(dimension, agentObjs, wallRatio, obstacles);
     env.showGrid();
 
+    cbs = new CBS(env); //默认原始算法
 
     isMapChanged = true;
     paused = true;
@@ -374,7 +394,7 @@ function addAgent() {
             if (flag) {
                 isMapChanged = true;
                 var option = new Option(newAgentName);
-                option.className = 'agentOption';
+                option.className = 'selectOption';
                 selBox.elt.options[selBox.elt.options.length] = option;
                 var newAgent = new Agent(pickPos(2), pickPos(3), newAgentName, pickColor());
                 agentObjs.push(newAgent);
@@ -569,10 +589,12 @@ function restart() {
 }
 
 function calcPath() {
+
+
     startTime();
     // 可以添加算法切换按钮，创建不同的CBS即可
     // cbs = new CBS(env);
-    cbs = new CBS_v2(env);
+    // cbs = new CBS_v2(env);
     solution = cbs.search();
     recordTime('Calculate Plan');
 

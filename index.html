@@ -20,6 +20,7 @@
 	<script src="utils.js" charset="utf-8"></script>
 	<script src="CommonMapSettings.js" charset="utf-8"></script>
 	<script src="AStar.js" charset="utf-8"></script>
+	<script src="AStar_v2.js" charset="utf-8"></script>
 	<script src="CBS.js" charset="utf-8"></script>
 	<script src="CBS_v2.js" charset="utf-8"></script>
 
@@ -47,14 +48,21 @@
 			<input type="radio" class="radiobtn" name="group1" value="2" id="end"><label class="radiolabel" for="end">终点</label>
 			<input type="radio" class="radiobtn" name="group1" value="3" id="block" checked="checked"><label class="radiolabel" for="block">障碍物</label>
 		</div>
+		<div class="algBox">
+			<label class="label">选择算法: </label>
+			<select class="select" id="alg">
+				<option value="alg1" class="selectOption">原始CBS算法</option>
+				<option value="alg2" class="selectOption">改进CBS算法</option>
+			</select>
+		</div>
 	</div>
 	<div class="settings">
 		<div class="inputBox">
 			<div class="mode">
 				<label class="label">地图模式: </label>
 				<select class="select" id="mapMode">
-					<option value="userMode" class="agentOption">用户模式</option>
-					<option value="testMode" class="agentOption">测试模式</option>
+					<option value="userMode" class="selectOption">用户模式</option>
+					<option value="testMode" class="selectOption">测试模式</option>
 
 				</select>
 			</div>

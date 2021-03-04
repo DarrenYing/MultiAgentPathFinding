@@ -50,6 +50,9 @@ var delCarBtn;
 var selBox;
 var curAgent;
 
+var algBox;
+var algName = "alg1";
+
 var inputSpeed;
 var speedBtn;
 
