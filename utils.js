@@ -1,11 +1,11 @@
 //保存数据到本地文件中
 function saveToFile(data, filename) {
-    let MIME_TYPE = "text/json";
+    let MIME_TYPE = "application/json";
     if (!data) return;
     if (!filename) filename = "console.json";
     if (typeof data === "object") data = JSON.stringify(data, null, 4);
 
-    let blob = new Blob([data], { tyoe: MIME_TYPE });
+    let blob = new Blob([data], { type: MIME_TYPE });
     // 创建事件
     let e = document.createEvent("MouseEvent");
     // 创建一个a链接
