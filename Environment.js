@@ -167,6 +167,9 @@ class Environment {
     }
 
     calcG(current, neighbor) {
+        // if(current.location.x==neighbor.location.x && current.location.y==neighbor.location.y){
+        //     return 2;
+        // }
         return 1;
         // return abs(current.location.x - neighbor.location.x) + abs(current.location.y - neighbor.location.y)
     }

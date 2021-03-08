@@ -158,6 +158,7 @@ function initCanvas() {
     env.showGrid();
 
     cbs = new CBS(env); //默认原始算法
+    switchAlg();    //主动触发，检查当前所选算法
 
     isMapChanged = true;
     paused = true;
@@ -226,7 +227,7 @@ function clearBtns() {
     if (runPauseButton == undefined) {
         return;
     }
-    var eleList = [runPauseButton, stepButton, resetButton, monitorTable, saveMapButton];
+    var eleList = [runPauseButton, stepButton, resetButton, monitorTable, saveMapButton, saveDataButton];
     for (var element of eleList) {
         let parent = element.elt.parentElement;
         parent.removeChild(element.elt);
@@ -541,7 +542,10 @@ function stepSearch() {
                 mapEdit = false;
                 pauseCheck(true);
                 logTimings();
+                let tt1 = millis();
                 drawMonitorVars();
+                let tt2 = millis();
+                console.log(tt2-tt1);
             }
         }
 
@@ -558,11 +562,13 @@ function stepSearch() {
 
             //开始下一组测试
             let orgAgentNum = tmpName.split('_')[3];
-            let newAgentNum = eval(orgAgentNum) + 1;
+            let newAgentNum = eval(orgAgentNum) + agentNumStep;
             if (newAgentNum >= agentNumLimit) {
-                noLoop();
+                // noLoop();
+                restart();
+                return;
             }
-            mapName.elt.value = tmpName.slice(0, tmpName.search('_' + orgAgentNum + '_') + 1) + str(newAgentNum) + '_ex0';
+            mapName.elt.value = tmpName.slice(0, tmpName.search('_' + orgAgentNum + '_ex') + 1) + str(newAgentNum) + '_ex0';
         }
         restart();
         initCanvas();
@@ -603,9 +609,9 @@ function calcPath() {
 
     if (!Object.keys(solution).length || solution == -1) {
         status = "No Solution!"
-        // console.log(status);
         // logTimings();
         runpause();
+        alert("No Solution!");
         // noLoop();
         return;
     } else {

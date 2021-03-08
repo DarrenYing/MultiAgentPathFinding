@@ -31,7 +31,7 @@ class AStar_v2 {
 
     checkIsSameDir(parents, prev, cur) {
         if (parents[prev] == undefined) {
-            return true;
+            return false;   //和原来保持一致
         }
 
         let curx = cur.location.x;
@@ -102,7 +102,7 @@ class AStar_v2 {
             // console.log(fScore);
 
             if (this.env.isReachTarget(current, agentName)) {
-                // console.log(cnt);
+                console.log(cnt);
                 return this.reconstructPath(parents, current);
             }
 

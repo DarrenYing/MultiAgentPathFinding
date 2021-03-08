@@ -76,8 +76,9 @@ var saveDataButton;
 var t;
 var timings = {};
 var timeStats = []; //记录统计每个地图小车运行的时间数据
-var idxLimit = 99;
-var agentNumLimit = 11;
+var idxLimit = 2;
+var agentNumLimit = 31;
+var agentNumStep = 5;
 
 
 // 小车相关监测变量
@@ -89,7 +90,7 @@ var monitorTable;
 var isMapChanged;
 
 // Astar寻找neighbor的顺序
-var dirs1 = [[0, -1], [1, 0], [0, 1], [-1, 0]]; //顺时针
+var dirs1 = [[0, -1], [1, 0], [0, 1], [-1, 0]]; //顺时针 上右下左
 var dirs2 = [[0, -1], [-1, 0], [0, 1], [1, 0]]; //逆时针
 // var dirs3 = [[0, -1], [1, 0], [0, -1], [-1, 0]];
 // var dirs4 = [[0, -1], [1, 0], [0, -1], [-1, 0]];

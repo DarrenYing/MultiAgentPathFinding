@@ -52,7 +52,7 @@ class AStar {
             // console.log(fScore);
 
             if (this.env.isReachTarget(current, agentName)) {
-                // console.log(cnt);
+                console.log(cnt);
                 return this.reconstructPath(parents, current);
             }
 
@@ -96,6 +96,7 @@ class AStar {
             // console.log('\n');
         }
 
+        console.log("failed:", agentName);
         return false;
 
     }
