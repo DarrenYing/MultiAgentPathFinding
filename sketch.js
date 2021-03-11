@@ -317,14 +317,18 @@ function logTimings() {
 
                     var tmpTotal = 0;
                     for (var agent of agentObjs) {
-                        var tmpRunTime = round(tmpSum / maxT * agent.pathLength, 3);
-                        tmpTotal += tmpRunTime;
                         let aname = agent.name;
+                        var tmpRunTime = tmpSum / maxT * agent.pathLength;    //全部视为直走时所用耗时
+                        tmpRunTime += tmpSum / maxT * agent.turnCount * 1.094;    //转弯耗时估计为直行的2.094倍，补偿差值
+                        tmpRunTime = round(tmpRunTime, 3);  //保留三位小数
+                        tmpTotal += tmpRunTime;
+
                         let tmpObj = {};
                         tmpObj[aname] = tmpRunTime;
                         tmpStats["Execution-Timings"].push(tmpObj);
                         // console.log(moment + "-" + agent.name + ": " + tmpRunTime.toString() + "ms"); //应该是每个agent一个时间
 
+                        // 转弯次数和停靠次数
                         let tmp1 = {};
                         tmp1[aname] = agent.turnCount;
                         tmpStats["TurnCounts"].push(tmp1);
@@ -545,7 +549,7 @@ function stepSearch() {
                 let tt1 = millis();
                 drawMonitorVars();
                 let tt2 = millis();
-                console.log(tt2-tt1);
+                console.log("draw monitors:", tt2-tt1);
             }
         }
 
@@ -563,6 +567,7 @@ function stepSearch() {
             //开始下一组测试
             let orgAgentNum = tmpName.split('_')[3];
             let newAgentNum = eval(orgAgentNum) + agentNumStep;
+            console.log("New Agent Num:", newAgentNum);
             if (newAgentNum >= agentNumLimit) {
                 // noLoop();
                 restart();

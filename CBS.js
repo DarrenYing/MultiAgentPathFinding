@@ -48,7 +48,6 @@ class CBS {
 
             //根据冲突分裂结点
             for (var agent in constraint_dict) {
-                console.log('###', typeof(agent));
                 var newNode = _.cloneDeep(p);
                 newNode.constraint_dict[agent].addConstraint(constraint_dict[agent]);
 

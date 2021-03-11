@@ -9,8 +9,8 @@ var left_pos = 10;
 var top_pos = 10;
 
 // 地图相关变量
-var cellw = 30;
-var cellh = 30;
+var cellw = 20;
+var cellh = 20;
 var gameMap;
 var mapGraph; //将地图存储为图片，节约每次刷新的绘制时间
 var mapEdit; //标记是否能编辑地图
@@ -78,7 +78,7 @@ var timings = {};
 var timeStats = []; //记录统计每个地图小车运行的时间数据
 var idxLimit = 2;
 var agentNumLimit = 31;
-var agentNumStep = 5;
+var agentNumStep = 1;
 
 
 // 小车相关监测变量

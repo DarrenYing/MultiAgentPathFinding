@@ -78,8 +78,10 @@ class AStar_v2 {
             if (cnt > maxCnt) {
                 break;
             }
-            var cur = 0;
-            for (var i = 1; i < openList.length; i++) {
+            // var cur = 0;
+            // for (var i = 1; i < openList.length; i++) {
+            var cur = openList.length-1;
+            for (var i = openList.length-2; i >= 0; i--) {
                 if (fScore[openList[i]] < fScore[openList[cur]]) {
                     cur = i;
                 } else if (fScore[openList[i]] == fScore[openList[cur]]) { // f值相等时，优选选择g值大的，因为g大代表探索了更长的路径，但在直线卡墙时会多循环几轮

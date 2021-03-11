@@ -125,3 +125,32 @@ class CTNode {
     }
 
 }
+
+// 数组实现优先队列：入队O(1), 出队O(n);
+class PriorityQueue {
+    constructor(arr=[]){
+        this.tree = arr;
+    }
+
+    // 入队
+    enqueue(val){
+        this.tree.push(val);
+    }
+
+    // 出队
+    dequeue(){
+        let minIndex = this.tree.length-1;
+        for (let i = this.tree.length-2; i >= 0; i--) {
+            if (this.tree[i] < this.tree[minIndex]){
+                minIndex = i;
+            }
+        }
+        this.tree.splice(minIndex, 1);
+        return minIndex
+    }
+
+    // 取队首
+    top(){
+        return this.tree[0];
+    }
+}

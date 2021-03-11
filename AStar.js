@@ -41,8 +41,10 @@ class AStar {
             if (cnt > maxCnt) {
                 break;
             }
-            var cur = 0;
-            for (var i = 1; i < openList.length; i++) {
+            // var cur = 0;
+            // for (var i = 1; i < openList.length; i++) {
+            var cur = openList.length-1;
+            for (var i = openList.length-2; i >= 0; i--) {
                 if (fScore[openList[i]] < fScore[openList[cur]]) {
                     cur = i;
                 }

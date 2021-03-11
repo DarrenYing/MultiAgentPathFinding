@@ -13,10 +13,10 @@ class CBS_v2 {
         for (var agent in this.env.agent_dict) {
             start.constraint_dict[agent] = new Constraints();
         }
-        let t1 = millis(); //精确到毫秒
+        // let t1 = millis(); //精确到毫秒
         start.solution = this.env.calcSolution(true); //计算初始路径解
-        let t2 = millis();
-        console.log(t2-t1);
+        // let t2 = millis();
+        // console.log(t2-t1);
         if (!start.solution) {
             return {};
         }
@@ -25,7 +25,9 @@ class CBS_v2 {
 
         this.openSet.push(start);
 
+        var cnt = 0;
         while (this.openSet.length) {
+            cnt++;
             var p = this.findMinCost(this.openSet);
             _.pull(this.openSet, p);
             this.closedSet.push(p);
@@ -40,6 +42,7 @@ class CBS_v2 {
 
             //如果没有冲突
             if (!conflict) {
+                console.log('cbs-cnt:', cnt);
                 console.log('done!');
                 return this.generatePlan(p.solution);
             }
@@ -52,7 +55,6 @@ class CBS_v2 {
 
             //根据冲突分裂结点
             for (var agent in constraint_dict) {
-                console.log('###', typeof(agent));
                 var newNode = _.cloneDeep(p);
                 newNode.constraint_dict[agent].addConstraint(constraint_dict[agent]);
 
@@ -115,8 +117,7 @@ class CBS_v2 {
             }
             else if (node.cost == minCost) {
                 if (node.nc < minNode.nc) {
-                    minNode = node;
-                    minCost = node.cost;
+                    minNode = node;     // 在复杂地图中能起一定作用
                 }
             }
         }
