@@ -32,10 +32,12 @@ function setup() {
     autoTestBtn = select('#autotest');
     autoTestBtn.mouseClicked(switchAutoTest);
 
-
+    btnBox = select('#btnBox');
+    btnBox.mouseClicked(checkRadio);
     radioStart = select('#start');
     radioEnd = select('#end');
     radioBlock = select('#block');
+
 
     mapBtn = select('#gmap');
     mapBtn.mousePressed(initCanvas);
@@ -89,7 +91,11 @@ function initCanvas() {
 
         // Test Mode, 用于测试自己设计的地图
         // var testMap = map_8by8_12_6_ex2;
-        var testMap = eval(mapName.elt.value);
+        try {
+            var testMap = eval(mapName.elt.value);
+        } catch(e) {
+            alert("该地图场景不存在！");
+        }
         var dimension = testMap.dimension;
         var agents = testMap.agents;
         agentObjs.splice(0, agentObjs.length);
@@ -640,15 +646,25 @@ function calcPath() {
     }
 }
 
+
 function checkRadio() {
+    //清除上一个Agent的痕迹
+    if(isMapReady || mapEdit==false){
+        agentObjs[lastIndex].closeBorder();
+    }
+    var index = selBox.elt.selectedIndex;
+    lastIndex = index;
     if (radioStart.elt.checked) {
         flagStart = true;
         flagEnd = false;
         flagBlock = false;
+        // 查看当前被选择的是哪个Agent，并将其起点框出来显示
+        agentObjs[index].addBorder(agentObjs[index].start);
     } else if (radioEnd.elt.checked) {
         flagEnd = true;
         flagStart = false;
         flagBlock = false;
+        agentObjs[index].addBorder(agentObjs[index].goal);
     } else {
         flagBlock = true;
         flagStart = false;
@@ -676,7 +692,7 @@ function mouseClicked() {
         let x = int((mouseX - left_pos) / cellw);
         let y = int((mouseY - top_pos) / cellh);
         // console.log(x, y);
-        checkRadio();
+        // checkRadio();
         if (isBoundSatisfied(x, y)) {
             isMapChanged = true;
             if (flagStart) {
@@ -732,7 +748,7 @@ function mouseDragged() {
     if (mapEdit) {
         let x = int((mouseX - left_pos) / cellw);
         let y = int((mouseY - top_pos) / cellh);
-        checkRadio();
+        // checkRadio();
         if (isBoundSatisfied(x, y)) {
             isMapChanged = true;
             if (flagBlock) {

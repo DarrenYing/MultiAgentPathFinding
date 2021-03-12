@@ -9,8 +9,8 @@ var left_pos = 10;
 var top_pos = 10;
 
 // 地图相关变量
-var cellw = 20;
-var cellh = 20;
+var cellw = 30;
+var cellh = 30;
 var gameMap;
 var mapGraph; //将地图存储为图片，节约每次刷新的绘制时间
 var mapEdit; //标记是否能编辑地图
@@ -36,6 +36,7 @@ var userModeInput;
 var testModeInput;
 var mapBtn;
 
+var btnBox; // 蓝框
 var radioStart;
 var radioEnd;
 var radioBlock;
@@ -88,6 +89,9 @@ var monitorTable;
 
 //重置后如果没改变地图，就不用重新计算
 var isMapChanged;
+
+//记录上一个复选框选中的Agent下标
+var lastIndex = 0;
 
 // Astar寻找neighbor的顺序
 var dirs1 = [[0, -1], [1, 0], [0, 1], [-1, 0]]; //顺时针 上右下左

@@ -86,4 +86,40 @@ class Agent {
         translate(-left_pos, -top_pos);
     }
 
+    // 添加一个边框
+    addBorder(pos) {
+        let x = pos[0];
+        let y = pos[1];
+
+        translate(left_pos, top_pos);
+
+        strokeWeight(2);
+        stroke('#ff5252');
+        fill(255);
+        rect(x * cellw, y * cellh, cellw, cellh)
+
+        translate(-left_pos, -top_pos);
+    }
+
+    // 删除边框
+    delBorder(pos) {
+        let x = pos[0];
+        let y = pos[1];
+
+        translate(left_pos, top_pos);
+
+        strokeWeight(2);
+        stroke(51);
+        fill(255);
+        rect(x * cellw, y * cellh, cellw, cellh)
+
+        translate(-left_pos, -top_pos);
+    }
+
+    // 清除全部边框
+    closeBorder() {
+        this.delBorder(this.start);
+        this.delBorder(this.goal);
+    }
+
 }
