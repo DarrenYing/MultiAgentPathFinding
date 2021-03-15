@@ -108,19 +108,21 @@ class CBS_v2 {
 
     findMinCost(tmpSet) {
         //找到cost最小的CTNode
+        // tmpSet.reverse();   //逆序
         var minNode;
         var minCost = 99999;
         for (var node of tmpSet) {
-            if (node.cost < minCost) {
+            if (node.cost < minCost) { // 逆序遍历
                 minNode = node;
                 minCost = node.cost;
             }
             else if (node.cost == minCost) {
-                if (node.nc < minNode.nc) {
+                if (node.nc > minNode.nc) {
                     minNode = node;     // 在复杂地图中能起一定作用
                 }
             }
         }
+        // tmpSet.reverse();
         return minNode;
     }
 

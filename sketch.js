@@ -646,12 +646,18 @@ function calcPath() {
     }
 }
 
-
-function checkRadio() {
-    //清除上一个Agent的痕迹
-    if(isMapReady || mapEdit==false){
+function clearBorder() {
+    if (isMapReady) {
+        // console.log("清除上一个", lastIndex);
         agentObjs[lastIndex].closeBorder();
     }
+}
+
+// 从画布点击触发,flag=false，从按钮组触发，flag=true
+function checkRadio() {
+    //清除上一个Agent的痕迹
+    clearBorder();
+
     var index = selBox.elt.selectedIndex;
     lastIndex = index;
     if (radioStart.elt.checked) {
@@ -659,6 +665,7 @@ function checkRadio() {
         flagEnd = false;
         flagBlock = false;
         // 查看当前被选择的是哪个Agent，并将其起点框出来显示
+        // console.log(agentObjs[index].start);
         agentObjs[index].addBorder(agentObjs[index].start);
     } else if (radioEnd.elt.checked) {
         flagEnd = true;
@@ -700,25 +707,29 @@ function mouseClicked() {
                 curAgent = getAgentByName(agentName);
                 if (env.grid[x][y].type != 1) {
                     //清除原来的start
+                    clearBorder();
                     env.grid[curAgent.start[0]][curAgent.start[1]].type = 0;
-                    env.showOneGrid(curAgent.start[0], curAgent.start[1]);
+                    // env.showOneGrid(curAgent.start[0], curAgent.start[1]);
                     //设定新的start
                     env.grid[x][y].type = 2;
                     curAgent.start = [x, y];
                     env.makeAgentDict();
                 }
+                checkRadio();
             } else if (flagEnd) {
                 var agentName = selBox.elt.value; //agentName
                 curAgent = getAgentByName(agentName);
                 if (env.grid[x][y].type != 1) {
-                    //清除原来的start
+                    //清除原来的goal
+                    clearBorder();
                     env.grid[curAgent.goal[0]][curAgent.goal[1]].type = 0;
-                    env.showOneGrid(curAgent.goal[0], curAgent.goal[1]);
-                    //设定新的start
+                    // env.showOneGrid(curAgent.goal[0], curAgent.goal[1]);
+                    //设定新的goal
                     env.grid[x][y].type = 3;
                     curAgent.goal = [x, y];
                     env.makeAgentDict();
                 }
+                checkRadio();
             } else {
                 var tmpFlag = true;
                 for (var agent of agentObjs) {
