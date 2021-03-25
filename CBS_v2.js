@@ -112,7 +112,7 @@ class CBS_v2 {
         var minNode;
         var minCost = 99999;
         for (var node of tmpSet) {
-            if (node.cost < minCost) { // 逆序遍历
+            if (node.cost < minCost) {
                 minNode = node;
                 minCost = node.cost;
             }

@@ -31,6 +31,9 @@
 </head>
 
 <body>
+	<div>
+		<button type="button" class="btn2" id="manual-btn" onclick="togglePopup()">操作手册</button>
+	</div>
 
 	<div class="settings">
 		<div class="agentBox">
@@ -87,7 +90,33 @@
 
 	</div>
 
+	<div class="popup" id="popup-1">
+	  <div class="overlay"></div>
+	  <div class="content">
+	    <div class="close-btn" onclick="togglePopup()">&times;</div>
+	    <div class="popup-title">操作手册</div>
+		<hr>
+	   	<div id="user-guide">
+	   		<ul id="document-content">
+				<li><p>设置地图参数，点击“生成地图”按钮，查看地图</p></li>
+				<li><p>点击“运行”按钮，查看算法执行过程</p></li>
+				<li><p>运行结束后，点击“重置”按钮，回到初始状态</p></li>
+				<li><p>点击地图网格，可以添加/清除障碍物</p></li>
+				<li><p>选择起点或终点，再选择Agent名称，可以设置相应起点或终点</p></li>
+			</ul>
+			<div id="document-link"><p>更详细的用户操作手册，请查看<a target="_blank" href="https://element.eleme.io/#/zh-CN">文档</a></p></div>
+	   	</div>
+	  </div>
+	</div>
+
 
 </body>
+
+<script>
+	function togglePopup(){
+		document.getElementById("popup-1").classList.toggle("active");
+	}
+</script>
+
 
 </html>

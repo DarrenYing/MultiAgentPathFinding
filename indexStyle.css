@@ -346,3 +346,158 @@ input[type="checkbox"]+label:before {
     top: 2px;
     left: 2px;
 }
+
+/* 弹出框设置 */
+.popup .overlay {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1;
+    display: none;
+}
+
+.popup .content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: #f1f2f6;
+    width: 700px;
+    height: 270px;
+    z-index: 2;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: "Microsoft YaHei", sans-serif;
+}
+
+.popup .close-btn {
+    cursor: pointer;
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    width: 30px;
+    height: 30px;
+    background: #222;
+    color: #fff;
+    font-size: 25px;
+    font-weight: 600;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 50%;
+}
+
+.popup .popup-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1B9CFC;
+    margin: -5px;
+    margin-bottom: 10px;
+}
+
+.popup.active .overlay {
+    display: block;
+}
+
+.popup.active .content {
+    transition: all 300ms ease-in-out;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.popup #document-content {
+    margin: 10px 15px;
+    padding: 5px;
+    text-align: left;
+}
+
+.popup #document-content li {
+    font-size: 20px;
+    color: #2C3A47;
+    height: 25px;
+    line-height: 25px;
+    margin-bottom: 5px;
+}
+
+.popup #document-link {
+    font-size: 18px;
+    color: #34495e;
+    font-family: "Microsoft YaHei";
+    height: 20px;
+    line-height: 20px;
+}
+
+/* 操作手册按钮 */
+#manual-btn {
+    float: left;
+}
+
+.btn2 {
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    transform: translate(-50, -50);
+}
+
+.btn2 {
+    background: none;
+    color: #0a3d62;
+    width: 120px;
+    height: 40px;
+    border: 1px solid #338033;
+    font-size: 18px;
+    border-radius: 4px;
+    transition: .6s;
+    overflow: hidden;
+}
+
+.btn2:focus {
+    outline: none;
+}
+
+.btn2:before {
+    content: '';
+    display: block;
+    position: absolute;
+    background: rgba(255, 255, 255, .5);
+    width: 60px;
+    height: 100%;
+    left: 0;
+    top: 0;
+    opacity: .5;
+    filter: blur(30px);
+    transform: translateX(-130px) skewX(-15deg);
+}
+
+.btn2:after {
+    content: '';
+    display: block;
+    position: absolute;
+    background: rgba(255, 255, 255, .2);
+    width: 30px;
+    height: 100%;
+    left: 30px;
+    top: 0;
+    opacity: 0;
+    filter: blur(30px);
+    transform: translateX(-100px) scaleX(-15deg);
+}
+
+.btn2:hover {
+    background: #F8EFBF;
+    cursor: pointer;
+}
+
+.btn2:hover:before {
+    transform: translateX(300px) skewX(-15deg);
+    opacity: .6;
+    transition: .7s;
+}
+
+.btn2:hover:after {
+    transform: translateX(300px) skewX(-15deg);
+    opacity: 1;
+    transition: .7s;
+}

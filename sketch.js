@@ -117,6 +117,7 @@ function initCanvas() {
         // User Input Mode
         var rows = inputRow.value();
         var cols = inputCol.value();
+        adjustCellWidth(rows, cols);
         var wallRatio = wallPercent.value();
         var agentNum = inputAgentNum.value();
         var obstacles = [];
@@ -208,6 +209,20 @@ function initCanvas() {
 
     // calcPath();
     // isAlgReady = true;
+}
+
+// 根据地图行数和列数，动态调整网格大小
+function adjustCellWidth(rows, cols) {
+    if (rows>80 || cols>80) {
+        cellw = 10;
+        cellh = 10;
+    } else if (rows>30 || cols>30) {
+        cellw = 20;
+        cellh = 20;
+    } else {
+        cellw = 30;
+        cellh = 30;
+    }
 }
 
 //清空记录
