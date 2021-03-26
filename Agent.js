@@ -77,18 +77,18 @@ class Agent {
 
         translate(left_pos, top_pos);
 
-        // if (t < this.pathLength) {
-        //     strokeWeight(2);
-        //     stroke(51);
-        //     fill(255);
-        //     rect(curx * cellw, cury * cellh, cellw, cellh);
-        // }
-        // else {
+        if (t < this.pathLength) {
+            strokeWeight(2);
+            stroke(51);
+            fill(255);
+            rect(curx * cellw, cury * cellh, cellw, cellh);
+        }
+        else {
             var imgSize = 3 * cellw / 4;
             imageMode(CENTER);
             tint(255);
             image(this.agentImg, curx * cellw + cellw / 2, cury * cellh + cellh / 2, imgSize, imgSize);
-        // }
+        }
 
         translate(-left_pos, -top_pos);
     }

@@ -169,6 +169,7 @@ function initCanvas() {
 
     isMapChanged = true;
     paused = true;
+    flagBlock = true;
 
     initSearch();
     clearBtns();
@@ -498,11 +499,15 @@ function pickColor() {
 }
 
 function updateSpeed() {
-    var val = inputSpeed.value();
-    if (val <= 100 && val >= 1) {
-        agentSpeed = floor(map(val, 1, 100, 80, 2));
+    if (mapEdit) {
+        var val = inputSpeed.value();
+        if (val <= 100 && val >= 1) {
+            agentSpeed = floor(map(val, 1, 100, 80, 2));
+        } else {
+            alert('请输入1-100之间的数字');
+        }
     } else {
-        alert('请输入1-100之间的数字');
+        alert('当前状态不可设置速度');
     }
 
 }
@@ -511,6 +516,7 @@ function initSearch() {
     mapGraph = null;
     mapEdit = true;
     status = "Parameter Tuning";
+    solution = undefined;
 }
 
 function pauseCheck(isPause) {
@@ -533,7 +539,7 @@ function runpause() {
 }
 
 function step() {
-    if (solution == undefined || !Object.keys(solution).length || solution == -1) {
+    if (isMapChanged) {
         alert('请先运行');
     } else if (status == "All Reached") {
         alert('已到达终点');
