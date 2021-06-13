@@ -8,7 +8,7 @@
 
 [系统文档](https://darren-ying.gitbook.io/multi-agent-system/)
 
-  
+
 ## Demo
 
 [在线尝试](https://mapf-cbs-ying.netlify.app/)
@@ -35,7 +35,7 @@
   Packages -> p5js-toolbar -> Toggle p5.js toolbar
 
   Click the run button and that's all
-```   
+```
 ## Optimizations
 
 ### V1.0	
@@ -232,6 +232,7 @@ UI界面的逻辑bug基本修复，UI样式初步调整完毕，全局变量存�
 
 ### 实验结果
 **8x8 障碍物比例1%**
+
 ![image-20210613201936321](https://i.loli.net/2021/06/13/JvoeQMaYt6UVmns.png)
 
 **20x20 障碍物比例1%**
@@ -248,7 +249,6 @@ UI界面的逻辑bug基本修复，UI样式初步调整完毕，全局变量存�
 * 系统状态及执行过程可视化
 * 数据统计及下载
 * 详细的系统文档
-  
 ## Authors
 
 - [@DarrenYing](https://www.github.com/DarrenYing)
@@ -256,7 +256,7 @@ UI界面的逻辑bug基本修复，UI样式初步调整完毕，全局变量存�
 
 For support, email ying_nt@qq.com or submit issues.
 
-  
+
 ## Appendix
 
 ### 参考文献
@@ -276,5 +276,3 @@ For support, email ying_nt@qq.com or submit issues.
 
 哈哈都看到这里了，能给个star嘛(⸝⸝•‧̫•⸝⸝)
 
-
-  
