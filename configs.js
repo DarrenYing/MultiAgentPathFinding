@@ -77,10 +77,33 @@ var saveDataButton;
 var t;
 var timings = {};
 var timeStats = []; //记录统计每个地图小车运行的时间数据
-var idxLimit = 2;
-var agentNumLimit = 31;
-var agentNumStep = 5;
-
+var idxLimit = 4;
+var agentNumLimit = 8;
+var agentNumStep = 1;
+var agentAvgTime = {
+    "map_8by8_1_2_ex": 309.921,
+    "map_8by8_1_3_ex": 319.296,
+    "map_8by8_1_4_ex": 326.293,
+    "map_8by8_1_5_ex": 327.675,
+    "map_8by8_1_6_ex": 344.38,
+    "map_8by8_1_7_ex": 315.871,
+    "map_8by8_6_2_ex": 309.921,
+    "map_8by8_6_3_ex": 319.296,
+    "map_8by8_6_4_ex": 326.293,
+    "map_8by8_6_5_ex": 327.675,
+    "map_8by8_6_6_ex": 344.38,
+    "map_8by8_6_7_ex": 315.871,
+    "map_20by20_4_12_ex": 404.091,
+    "map_20by20_4_16_ex": 553.267,
+    "map_20by20_4_20_ex": 663.151,
+    "map_20by20_4_4_ex": 295.564,
+    "map_20by20_4_8_ex": 284.203,
+    "map_50by50_25_10_ex": 336.545,
+    "map_50by50_25_15_ex": 480.991,
+    "map_50by50_25_20_ex": 622.03,
+    "map_50by50_25_25_ex": 774.773,
+    "map_50by50_25_30_ex": 932.688
+}
 
 // 小车相关监测变量
 var monitorTable;

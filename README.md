@@ -1,5 +1,42 @@
-# MultiAgentPathFinding
- 多AGV路径规划演示模型（CBS算法）
+
+# 多Agent路径规划仿真系统
+
+针对多AGV物流分拣场景建立的仿真模拟系统，是我的本科毕业设计，开源以作纪念。
+
+
+## Documentation
+
+[系统文档](https://darren-ying.gitbook.io/multi-agent-system/)
+
+  
+## Demo
+
+[在线尝试](https://mapf-cbs-ying.netlify.app/)
+
+
+## Screenshots
+
+![image-20210613195542733.png](https://i.loli.net/2021/06/13/63rn2QgBouTDdVI.png)
+## Installation
+
+本系统使用p5.js编写，推荐使用atom等支持该语言的IDE编辑。
+
+下载IDE后，下载插件
+```bash
+  File -> Settings -> Packages
+  
+  Search p5js-toolbar and Install it
+```
+
+## Run Locally
+
+完成后开启p5js-toolbar
+```bash
+  Packages -> p5js-toolbar -> Toggle p5.js toolbar
+
+  Click the run button and that's all
+```   
+## Optimizations
 
 ### V1.0	
 
@@ -177,15 +214,6 @@ UI界面的逻辑bug基本修复，UI样式初步调整完毕，全局变量存�
 
 
 
-### 思路记录
-
-* 十字形冲突发生时，上层向下层传递一个信号，下层AStar算法在寻路时优先考虑wait，加快求解速度
-* ~~Astar层面考虑f和g都相等时，优先选择视距（欧氏距离）大的，从而减少转弯次数。~~
-* 有方向参考时，遵循之前方向行走，第一步没有方向导向时，使用视距来优化
-* 数据结构层面优化，openset使用优先队列（自行实现）。
-* splice代替RemoveFromArray
-
-
 
 ### 目前准备的实验地图
 
@@ -201,3 +229,52 @@ UI界面的逻辑bug基本修复，UI样式初步调整完毕，全局变量存�
   * 每个3组
 * 8*8，100组
 * 32*32，100组
+
+### 实验结果
+**8x8 障碍物比例1%**
+![image-20210613201936321](https://i.loli.net/2021/06/13/JvoeQMaYt6UVmns.png)
+
+**20x20 障碍物比例1%**
+![image-20210613202129716](https://i.loli.net/2021/06/13/j7DTZpWJXCIkQdf.png)
+
+**50x50 障碍物比例1%**
+![image-20210613202224692](https://i.loli.net/2021/06/13/JkneCo3Xj8HEVfN.png)
+
+### V2.0
+* 地图的生成与导出
+* Agent的增删与速度调整
+* 运行场景自由编辑
+* 批量自动化测试（不够完善）
+* 系统状态及执行过程可视化
+* 数据统计及下载
+* 详细的系统文档
+  
+## Authors
+
+- [@DarrenYing](https://www.github.com/DarrenYing)
+## Support
+
+For support, email ying_nt@qq.com or submit issues.
+
+  
+## Appendix
+
+### 参考文献
+[1] Sharon G, Stern R, Goldenberg M, et al. The increasing cost tree search for optimal multi-agent pathfinding[J]. Artificial Intelligence, 2013, 195: 470-495.
+
+[2] Sharon G, Stern R, Felner A, et al. Conflict-based search for optimal multi-agent pathfinding[J]. Artificial Intelligence, 2015, 219: 40-66.
+
+[3] Boyarski E, Felner A, Stern R, et al. Icbs: The improved conflict-based search algorithm for multi-agent pathfinding[C]//Eighth annual symposium on combinatorial search. 2015.
+
+### 一些感想
+算法主要在开题前(2020.10)完成，寒假(2021.2)完善了系统功能，开学后就是测试和调bug，以及写论文(2021.3)
+
+十分感谢shiffman的p5.js教程，讲课生动有趣，容易理解，给出的A*算法案例对我帮助很大
+
+开发过程比较细碎，主要在忙导师的其他项目，不过这个项目也是我第一个比较认真且独立完成的Demo，如果它能帮助到你或给你启发，那就再好不过了ξ( ✿＞◡❛)
+
+
+哈哈都看到这里了，能给个star嘛(⸝⸝•‧̫•⸝⸝)
+
+
+  

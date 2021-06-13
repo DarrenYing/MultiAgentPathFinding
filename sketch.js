@@ -110,6 +110,7 @@ function initCanvas() {
         }
         var rows = dimension[0];
         var cols = dimension[1];
+        adjustCellWidth(rows, cols);
         var obstacles = testMap.obstacles;
         var wallRatio = testMap.wallRatio;
 
@@ -323,9 +324,12 @@ function recordTime(moment) {
 //打印时间
 function logTimings() {
     var tmpStats = {};
-    tmpStats["MapName"] = mapName.elt.value;
+    var mname = mapName.elt.value;
+    tmpStats["MapName"] = mname;
+    var avgTime = agentAvgTime[mname.slice(0, mname.length-1)];
     tmpStats["TurnCounts"] = [];
     tmpStats["WaitCounts"] = [];
+    tmpStats["PathLength"] = [];
     tmpStats["Execution-Timings"] = [];
     for (var moment in timings) {
         if (timings.hasOwnProperty(moment)) {
@@ -340,8 +344,8 @@ function logTimings() {
                     var tmpTotal = 0;
                     for (var agent of agentObjs) {
                         let aname = agent.name;
-                        var tmpRunTime = tmpSum / maxT * agent.pathLength;    //全部视为直走时所用耗时
-                        tmpRunTime += tmpSum / maxT * agent.turnCount * 1.094;    //转弯耗时估计为直行的2.094倍，补偿差值
+                        var tmpRunTime = avgTime * agent.pathLength;    //全部视为直走时所用耗时
+                        tmpRunTime += avgTime * agent.turnCount * 1.094;    //转弯耗时估计为直行的2.094倍，补偿差值
                         tmpRunTime = round(tmpRunTime, 3);  //保留三位小数
                         tmpTotal += tmpRunTime;
 
@@ -357,6 +361,10 @@ function logTimings() {
                         let tmp2 = {};
                         tmp2[aname] = agent.waitCount;
                         tmpStats["WaitCounts"].push(tmp2);
+                        // 记录路径长度
+                        let tmp3 = {}
+                        tmp3[aname] = agent.pathLength;
+                        tmpStats["PathLength"].push(tmp3);
                     }
                     tmpStats["Average-Time"] = round(tmpTotal / agentObjs.length, 3);
                     break;
