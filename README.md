@@ -11,9 +11,9 @@
 
 ## Demo
 
-[在线尝试](https://mapf-cbs-ying.netlify.app/)
+[在线尝试](https://mapf-simulation-system.pages.dev/)
 
-[在线尝试(备用)](https://mapf-simulation-system.pages.dev/)
+[在线尝试(备用)](https://mapf-cbs-ying.netlify.app/)
 
 
 ## Screenshots
