@@ -254,9 +254,7 @@ UI界面的逻辑bug基本修复，UI样式初步调整完毕，全局变量存�
 ## Authors
 
 - [@DarrenYing](https://www.github.com/DarrenYing)
-## Support
 
-For support, email ying_nt@qq.com or submit issues.
 
 
 ## Appendix
